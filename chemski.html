@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<!--
+forked from https://github.com/mbuliga/quinegraphs/blob/master/ice.html
+
+author: Marius Buliga
+last modified: 15.08.2020
+//
+-->
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css" href="css/icequine.css">
+
+<title>chemSKI and chemlambda</title>
+</head>
+
+
+<body style="overflow: scroll;">
+
+<script src="js/d3.v5.9.4.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/pagelook.js"></script>
+<script src="js/ioprep.js"></script>
+
+<div class="header">
+  <span3>[Working version] Cite as: </span3><div>chemSKI &amp; chemlambda.  <a href="http://imar.ro/~mbuliga/index.html">&copy; Marius Buliga</a> (2020), https://mbuliga.github.io/chemski/chemski.html<span id="citeas"></span></div>
+<span3>See also:</span3><br> <a href="https://chemlambda.github.io/index.html">All chemlambda projects</a>
+<div><br><br>
+German Kruszewski posed the problem of a graph-rewriting version of his and Tomas Mikolov <a href="https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258">Combinatory Chemistry: Towards a Simple Model of Emergent Evolution</a>, <a href="https://arxiv.org/abs/2003.07916">arXiv:2003.07916</a> in chemlambda style. <br><br>
+<a href="https://github.com/mbuliga/chemski">chemSKI</a> is a purely local graph rewrite system for the SKI combinators calculus which answers this problem.
+</div>
+</div>
+
+<div class="row">
+  <div class="col-1 menu" style="text-align: left;"><div class="scol-12"> <span3 id="agetext">random choices </span3><br><br> <span3  id="buttonAge" class="image2" ></span3></div>
+  </div>
+  <div class="col-7 menu">
+    <ul>
+      <li>    
+        <span2> 
+          <select  class="theme-construction" id="listofmols" onchange="selectionStarter();">
+            <option value="howto">MENU</option>
+            <option value="IA">IA </option>
+            <option value="KA">KA </option>
+            <option value="SK">SK </option>
+            <option value="SA">SA </option>
+            <option value="AS">AS </option>
+            <option value="IS">IS </option>
+            <option value="KS">KS </option>
+            <option value="SS1">SS1 </option>
+            <option value="SS2">SS2 </option>
+            <option value="AK">AK </option>
+            <option value="SK2">SK2 </option>
+            <option value="SK3">SK3 </option>
+            <option value="SK23">SK23 </option>
+            <option value="SAA">SAA </option>
+            <option value="KAB">KAB </option>
+            <option value="SABC">SABC </option>
+            <option value="SKKI">SKKI </option>
+            <option value="SIISII"> (SII)(SII) </option>
+            <option value="SKIREC"> SKIREC </option>
+            <option value="omega">&lambda; quine: omega combinator </option>
+            <option value="bigpred_train"> first chemlambda quine: the ouroboros </option>
+            <option value="spark_243501">chemlambda quine: "spark_243501"</option>
+            <option value="9_quine">chemlambda quine: "9_quine"</option>
+            <option value="10_quine_bubbles">chemlambda quine: "10_quine_bubbles"</option>
+            <option value="16_quine_A_L_FI_FO">chemlambda quine: "16_quine_A_L_FI_FO"</option>
+            <option value="16_quine_A_L_FI_FO_duplicate">"16_quine_A_L_FI_FO_duplicate"</option>
+            <option value="shuffle_10_0A8E7D9132C546B">"shuffle_10_0A8E7D9132C546B"</option>
+            <option value="shuffle_10_51D3E60BA74C928">"shuffle_10_51D3E60BA74C928"</option>
+            <option value="shuffle_10_D870619BC345AE2">"shuffle_10_D870619BC345AE2"</option>
+            <option value="random_10_quine_bubbles">"random_10_quine_bubbles"</option>
+          </select>
+        </span2> 
+      </li>
+      <li>
+         <span3>rewrites weights slider</span3> <div class="slidecontainer">GROW &nbsp;<input class="slider" type="range" min="0" max="100" value="50" id="rewritesRange"> &nbsp; SLIM</div>
+      </li>
+    </ul>
+  </div>
+  <div class="col-4 menu" style="text-align: left;">
+    <span3 style="text-align: left;"> nodes &sim; </span3><span id="nodenumber"></span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-1 menu">
+    <div class="scol-12"> <span3  id="button0" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button1" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button2" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button3" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button4" class="image2" ></span3></div>
+  </div>
+  <div class="col-7 menu">
+    <ul>
+      <li> <div id="svgdiv"> </div></li>
+      <li><span3>gravity slider</span3> <div class="slidecontainer">MIN &nbsp;<input class="slider" type="range" min="1" max="250" value="150" id="gravRange"> &nbsp; MAX</div></li>
+      <li><span2>CODE: </span2><span id="molyoulookat"></span></li>
+      <li><span> (Rewrites stop at max.  </span><span id="maxnodenumber">512</span> nodes<span>)</span></li>
+    </ul>
+  </div>
+  <div class="col-4 menu" style="text-align: left;">
+    <span id="comments" ></span>
+  </div>
+</div>
+
+<div class="row">
+      <div class="scol-6" style="text-align: left;">
+        <span2>before:</span2><br><br>
+        <span id="puttransformcachealt"></span>
+      </div> 
+      <div class="scol-6" style="text-align: left;">
+        <span2>chosen:</span2><br><br>
+        <span id="chosentransform"></span>
+      </div>
+      <div class="scol-6" style="text-align: left;">
+        <span2>after:</span2><br><br>
+        <span id="puttransformcachealtafter"></span>
+      </div>
+    <div class="scol-6" style="text-align: left;">
+      <span2>mol before:</span2><br><br>
+      <span id="molexport"></span>
+    </div>
+    <div class="scol-6" style="text-align: left;">
+      <span2>mol after:</span2><br><br>
+      <span id="molexportafter"></span>
+    </div>
+</div>
+
+
+<script src="js/iceMol.js"></script>
+<script src="js/iceComments.js"></script>
+<script src="js/parameters.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/chemistry.js"></script>
+<script src="js/0parser.js"></script>
+<script src="js/myD3Graph.js"></script>
+<script src="js/icequine.js"></script>
+
+<script>
+var whichP = location.hash;
+whichP = whichP.replace(/#/g, "");
+if (whichP != "") {
+document.getElementById("listofmols").value = whichP;
+}
+whichButtons(whichP);
+selectionStarter();
+</script>
+
+</body>
+</html>
+
+
