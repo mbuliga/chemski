@@ -1,4 +1,4 @@
-# chemski
+# chemSKI
 Purely local graph rewrite system for the SKI combinator calculus, in [chemlambda](https://chemlambda.github.io/index.html) style.
 
 Example: [SII(SII), the Omega combinator SKI version](https://mbuliga.github.io/chemski/chemski.html#SIISII). Compare with the [Omega combinator in chemlambda](https://mbuliga.github.io/quinegraphs/ice.html#omega).
