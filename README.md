@@ -7,7 +7,7 @@ German Kruszewski posed the problem of a graph-rewriting version of his and Toma
  https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258  
  https://arxiv.org/pdf/2003.07916.pdf
 
-A problem of Combinatory chemistry is that the reaction
+A problem of Combinatory Chemistry is that the reaction
 
 S a b c   + c --> (a c) (b c)  + S    
 
