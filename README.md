@@ -1,6 +1,7 @@
 # chemski
 Purely local graph rewrite system for the SKI combinator calculus, in [chemlambda](https://chemlambda.github.io/index.html) style.
 
+Example: [SII(SII), the Omega combinator SKI version](https://mbuliga.github.io/chemski/chemski.html#SIISII)
 
 German Kruszewski posed the problem of a graph-rewriting version of his and Tomas Mikolov Combinatory Chemistry
  https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258  
