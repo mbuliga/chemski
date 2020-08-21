@@ -3,7 +3,7 @@
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/0parser.js
 //
 // author: Marius Buliga
-// last updated: 13.08.2020
+// last updated: 21.08.2020
 
 var op = {
 "lparen": "(",
@@ -24,8 +24,14 @@ if (x == op.lparen || x == op.rparen || x == op.dot || x == op.lambda || x == op
 return res; 
 }
 
-// modified?
+// 
 function isVar(x) { return !isOp(x);}
+
+function isSKIComb(x) {
+var res = false;
+if (x == "S" || x == "K" || x == "I" || x =="S1") res = true;
+return res; 
+}
 
 // sanitize input
 function sanitize(input) {
@@ -147,7 +153,16 @@ function parserCaller(molvi, stick) {
     while (current !== op.eof) {
       if (isVar(current)) {
         iRightAbs = term.right + term.absolute;
+// mod for SKI, without isSkiTerm
+        if (isSKIComb(current)) {
+          if (current == "S" ) {
+            molV += "S1" + " "  + current   + " " + iRightAbs + "^";
+          } else {
+          molV += current + " " + current + " " + iRightAbs + "^";
+          }
+        } else {
         molV += "FRIN " + current + " " + iRightAbs + "^";
+        }
         term.right += 1;
         term.middle = term.right;
         current = stack[term.right];
@@ -271,10 +286,11 @@ function makeEdgesVector(molvi,maxC) {
           oneEdge = molvi[i][k];
           molve[oneEdge].push({"line":i, "position":k});
         } break;       
+// mod for SKI, without isSKITerm = 1              ????
       case "FRIN":
         oneEdge = molvi[i][2];
         molve[oneEdge].push({"line":i, "position":2}); break;
-      case "FROUT":
+      case "FROUT": case "K": case "I": case "S1":
         edgeBool = true;
         oneEdge = molvi[i][2];
         molve[oneEdge].push({"line":i, "position":2}); break;
@@ -318,6 +334,7 @@ function makeEdgesVector(molvi,maxC) {
   for (var i=0; i<molvi.length; i++) {
     molvL = molvi[i];
     stopb = true;
+
     if (molvL[0] == "FRIN") {
       varNm = molvL[1];
       varIn = molvL[2];
@@ -397,6 +414,11 @@ var molvL;
 
 var molvDet = importMolVector(molvOut,"^");
 
+
+
+//
+
+
 //find edges of the graph, until now, free and bound variables
 var mkEdgeV = makeEdgesVector(molvDet,maxCount);
 
@@ -410,7 +432,12 @@ for (var i=0; i<boundEdges.length; i++) {
   if (boundEdges[i][0]) {
     switch (boundEdges[i].length) {
       case 1:
-      molvDet[i] = ["T", molvDet[i][2]];
+// mod for SKI
+      if (isSKIComb(molvDet[i][0])) {
+        molvDet[i] = [molvDet[i][0], molvDet[i][2]];
+      } else {
+        molvDet[i] = ["T", molvDet[i][2]];
+      }
       break;
       case 2:
       molvDet[boundEdges[i][1]] = ["Arrow", molvDet[i][2], molvDet[boundEdges[i][1]][2]];
@@ -472,6 +499,7 @@ for (var i=0; i<freeEdges.length; i++) {
     }
   }
 }
+maxCount = nodeCnt;
 // final grooming
 molvDet[0][0] = "FROUT";
 for (var i=0; i<molvDet.length; i++) {
@@ -479,6 +507,20 @@ for (var i=0; i<molvDet.length; i++) {
   molvDet.splice(i,1);
   }
 }
+
+// mod for changing S1 to S for SKI
+
+for (var i=0; i<molvDet.length; i++) {
+  if (molvDet[i][0] == "S1") {
+  var arrOut = molvDet[i][1];
+  molvDet[i] = ["S",maxCount,maxCount,arrOut];
+  maxCount +=1;
+  }
+}
+
+
+//
+
 var molFromLambda = "";
 var molline = "";
 for (var i=0; i<molvDet.length; i++) {
@@ -587,6 +629,44 @@ function decoratorLambda0(molString,globalCounter){
       molFinalEdgesDeco[molFinalArray[i][1]] = "";
       break;
 
+// decorator for nodes S, K, I
+
+      case "I":
+      molFinalEdgesInDeco[molFinalArray[i][1]] = "I";
+
+      molFinalEdgesDeco[molFinalArray[i][1]] = "";
+      break;
+
+
+      case "K":
+      molFinalEdgesInDeco[molFinalArray[i][1]] = "K";
+
+      molFinalEdgesDeco[molFinalArray[i][1]] = "";
+      break;
+
+      case "S1":
+      molFinalEdgesInDeco[molFinalArray[i][1]] = "S";
+
+      molFinalEdgesDeco[molFinalArray[i][1]] = "";
+      break;
+
+
+      case "S":
+      if (molFinalArray[i][1] == molFinalArray[i][2]) {
+        molFinalEdgesOutDeco[molFinalArray[i][1]] = "S";
+        molFinalEdgesInDeco[molFinalArray[i][2]] = "S";
+        molFinalEdgesInDeco[molFinalArray[i][3]] = "S";
+      } else {
+        molFinalEdgesOutDeco[molFinalArray[i][1]] = "";
+        molFinalEdgesInDeco[molFinalArray[i][2]] = "";
+        molFinalEdgesInDeco[molFinalArray[i][3]] = "";
+      }
+      molFinalEdgesDeco[molFinalArray[i][1]] = "";
+      break;
+
+// end decorator for nodes S, K, I
+
+
       case "FRIN":
       for (var inod=0; inod<nodes.length; inod++) {
         if (nodes[inod].type == "FRIN" && nodes[inod].number == i) {
@@ -663,6 +743,7 @@ function decoratorLambda0(molString,globalCounter){
           
           case "FO":
           case "FOE":
+          case "S":
           leftPortDeco = molFinalEdgesOutDeco[molFinalArray[ino][1]];
           if (leftPortDeco != "") {
             molFinalEdgesInDeco[molFinalArray[ino][3]] =  leftPortDeco;
@@ -754,7 +835,7 @@ function decoratorLambda(){
   var molFinalDeco = inputFromDeco.molfinaldeco;
   var molFinalArray = inputFromDeco.molfinalarray;
   var molFinalEdgesOutDeco = inputFromDeco.molfinaledgesoutdeco;
-  var equalRel = inputFromDeco.equalrel;
+  var equalRRel = inputFromDeco.equalrel;
 
 
 // show the FROUT nodes decoration
@@ -763,12 +844,12 @@ function decoratorLambda(){
   for (var i=0; i<molFinalDeco.length; i++) {
     if (molFinalArray[i][0] == "FROUT") {
 //      outputDeco += "FROUT " + i + ": " + molFinalEdgesOutDeco[molFinalArray[i][1]] + "\n";
-      outputDeco += molFinalEdgesOutDeco[molFinalArray[i][1]] + "\n";
+      outputDeco += molFinalEdgesOutDeco[molFinalArray[i][1]] + "\n\n";
     }
   }
 
-  for (var i=0; i<equalRel.length; i++) {
-    outputDeco += equalRel[i].rel + "&nbsp; | &nbsp;";
+  for (var i=0; i<equalRRel.length; i++) {
+    outputDeco += equalRRel[i].rel + "&nbsp; | &nbsp;";
   }
 
 

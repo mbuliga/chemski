@@ -49,6 +49,10 @@ var olderFirst = 0;
 
 var isChemlambda = 1;
 
+// parser for lambda term (isSkiTerm = 0) or for SKI term (isSkiTerm = 1)
+
+var isSkiTerm = 1;
+
 
 // age
 
