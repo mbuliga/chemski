@@ -16,7 +16,7 @@ The mol nodes types are listed in the vector autofilter. For the theory, let NT 
 finite  set of mol node types.
 */
 
-// added S,K,I for chemSKI
+// added S,K,I for chemSKI  , "S1" is the 1-valent version of "S"
 
 var autoFilter = ["L","A","FI","D","FOE","FOX","FO","T","Arrow","GAMMA","DELTA","S","K","I"];
 
@@ -65,6 +65,7 @@ var nodeValence = {
   "S": [0,1,1],
   "K": [0],
   "I": [1],
+  "S1": [1],
 }
 
 /*

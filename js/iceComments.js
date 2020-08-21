@@ -14,6 +14,49 @@ switch (molName) {
   case "SIISII":
   var mol = "SII(SII) is a chemSKI quine. It is the equivalent in SKI combinators calculus of the <a href=\"https://mbuliga.github.io/quinegraphs/ice.html#omega\">Omega combinator in chemlambda</a>";
   break;
+    
+  case "IA":
+  var mol = "chemSKI rewrite termIA <br><br> I a - - > a</a>";
+  break;
+
+  case "KAB":
+  var mol = "chemSKI rewrite KA <br><br> K a b - - > a</a>";
+  break;
+
+  case "SABC":
+  var mol = "chemSKI rewrite SA <br><br> S a b c - - > (a c) (b c) <br><br> Here the 3-valent node S passes from being the S combinator to being a fanout node. <br><br> The rewrite is conservative in the number of nodes and edges.</a>";
+  break;
+
+  case "SK": case "SK3":
+  var mol = "chemSKI rewrite terminSK. The node S plays two roles: as the combinaor S and as a fanout. The node K behaves as combinator K but also as a termination.</a>";
+  break;
+
+  case "IS":
+  var mol = "chemSKI rewrite terminIS, between  node I and the node S in the role of a fanout.</a>";
+  break;
+
+  case "SS1":
+  var mol = "chemSKI rewrite SS, between  node S in the role of combinator S and the node S in the role of a fanout.</a>";
+  break;
+
+
+  case "KS":
+  var mol = "chemSKI rewrite terminKS, between  node K and the node S in the role of a fanout.</a>";
+  break;
+
+
+  case "AS":
+  var mol = "chemSKI rewrite DIST1, between application node A and the node S in the role of a fanout.</a>";
+  break;
+
+  case "AK":
+  var mol = "chemSKI rewrite termAK, between application node A and the node K in the role of a termination.</a>";
+  break;
+
+
+  case "SKKI":
+  var mol = "Reduction of the graph corresponding to the SKI term SKKI.</a>";
+  break;
 
   case "icvschem":
   var mol = "IC>chem&lambda; button transforms a Lafont' <a href=\"https://pdfs.semanticscholar.org/6cfe/09aa6e5da6ce98077b7a048cb1badd78cc76.pdf\">Interaction Combinators</a> graph into a Directed IC graph.<br><br> Here Directed IC is a variant of Asperti' <a href=\"https://github.com/asperti/BOHM1.1\">BOHM machine</a> graph rewrite system, which is very close to chemlambda, but without conflicting rewrites.<br><br> You can pass from chemlambda to Directed IC chemistry by using the 2nd \"change\" button from the top down.<br><br>We compare here IC quines with chemlambda quines, on a common ground.<br><br>";

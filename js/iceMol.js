@@ -59,9 +59,6 @@ switch (molName) {
   var mol = "A 1 2 3^K 3";
   break;
 
-  case "SK2":
-  var mol = "S 1 2 3^K 2";
-  break;
 
   case "SK3":
   var mol = "S 1 2 3^K 3";
