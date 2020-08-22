@@ -15,7 +15,7 @@ function chemistryChoice() {
 // added chemistryChoice
   if (isChemlambda == 1) {
 // which chemistries (i.e. graph rewrite systems) we use?
-    graphRewriteSystems = ["T","COMB","IC","CHEMLAMBDABARE","CHEMLAMBDAEND"];
+    graphRewriteSystems = ["T","COMB","IC","CHEMLAMBDABARE","CHEMLAMBDAEND","CHEMSKI"];
   } else {
     graphRewriteSystems = ["T","COMB","IC","CHEMLAMBDABARE","DICMOD"];
   }
@@ -133,6 +133,19 @@ var ButtonLambda = [
 //  {"Id":"buttonShot", "Class":"image2", "Visibility":"visible", "Onclick": function () {screenShot();}, "Text":"photo"}  
 ];
 
+
+var ButtonSKILambda = [
+  {"Id":"buttonAge", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); lambdaToMol(); reloadCode(); setComb(1);setSpeed(1); setStart(1);  chemistryChoice(); loop();}, "Text":"&lambda;SKI> mol"}, 
+  {"Id":"button1", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(1); setStart(1); chemistryChoice(); loop();}, "Text":"start"},
+  {"Id":"button2", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0);}, "Text":"stop"},
+  {"Id":"button3", "Class":"image2", "Visibility":"visible", "Onclick": function () {setStart(0); loop2(); decoratorLambda();}, "Text":"step"},
+  {"Id":"whichChem", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); decoratorLambda();}, "Text":"mol> &lambda;SKI"},
+//  {"Id":"buttonAge", "Class":"image2", "Visibility":"visible", "Onclick": function () {setOlder();}, "Text":"change"}, 
+//  {"Id":"whichChem", "Class":"image2", "Visibility":"visible", "Onclick": function () {setChem();}, "Text":"change"},
+//  {"Id":"whichMetabo", "Class":"image2", "Visibility":"visible", "Onclick": function () {setMetabo();}, "Text":"change"},
+//  {"Id":"buttonShot", "Class":"image2", "Visibility":"visible", "Onclick": function () {screenShot();}, "Text":"photo"}  
+];
+
 var ButtonICLambda = [
   {"Id":"button0", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0);   ic2chem(); reloadCode();   setComb(1);setSpeed(1); setStart(1); chemistryChoice(); loop();}, "Text":"IC>chem&lambda;"}, 
   {"Id":"button1", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(1); setStart(1); chemistryChoice(); loop();}, "Text":"start"},
@@ -205,6 +218,9 @@ function whichButtons(choiceButtons) {
     var selectedButtons = ButtonLambda;
     break;
 
+    case "SKInote":
+    var selectedButtons = ButtonSKILambda;
+    break;
 
     case "arena":
     var selectedButtons = ButtonArena;

@@ -67,6 +67,12 @@ switch (molName) {
   var mol = "In the textarea is PRED ((POW 3) 4)<br><br>This is a parser from lambda calculus to chemlambda<br><br>Examples:<br><br>(\\x.x x) (\\x.x x) is OK! <br>(\\x.xx) (\\x.xx) is NOT OK, because it believes \"xx\" is a variable<br><br>(\\x.\\y.x) z  works OK! <br><br>Part of the repository <a href=\"https://github.com/mbuliga/quinegraphs\">Quine graphs</a>.<br><br>Type terms in textarea, click buttons!<br><br>Hover with the mouse over nodes to trigger rewrites.<br><br>Click+drag the nodes to arrange the graph.<br><br>Click on the background and drag to translate the graph.<br><br> Mouse wheel to resize the graph.<br><br>Use gravity slider to expand or contract the graph.<br><br>";
   break;
 
+
+  case "SKInote":
+  var mol = "Use the window \"&lambda; or SKI -> mol\" to parse a SKI combinator to chemSKI. Actually this is a parser from lambda calculus AND SKI combinators to chemlambda  AND chemSKI, where the letters \"S\", \"K\" and \"I\" are treated as in SKI. <br><br>Examples:<br><br>(\\x.x x) (\\x.x x) is OK! <br>(S I I) (S I I) is OK<br><br>(\\x.\\y.x) z  works OK! <br><br> S K K I works OK!<br><br> Part of the repository <a href=\"https://github.com/mbuliga/chemski\">chemSKI</a>.<br><br>Type terms in textarea, click buttons!<br><br>Hover with the mouse over nodes to trigger rewrites.<br><br>Click+drag the nodes to arrange the graph.<br><br>Click on the background and drag to translate the graph.<br><br> Mouse wheel to resize the graph.<br><br>Use gravity slider to expand or contract the graph.<br><br>";
+  break;
+
+
   case "howto":
   var mol = "If you know how to use this page then select one of the graphs from the drop-down menu.<br><br>Click on \"step\" for one random rewrite.<br><br>Click on \"start\" to apply random rewrites as long as there is possible.<br><br>Click on \"stop\" to stop.<br><br>Click on \"reload\" to reload the same graph.<br><br>There is a manual use too:<br><br>Hover with the mouse over nodes to trigger rewrites.<br><br>Click+drag the nodes to arrange the graph.<br><br>Click on the background and drag to translate the graph.<br><br> Mouse wheel to resize the graph.<br><br>Use gravity slider to expand or contract the graph.<br><br>Use rewrites weights slider to privilege the rewrites which grow the no. of nodes, or those which decrease the no. of nodes.";
   break;
