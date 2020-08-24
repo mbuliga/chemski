@@ -11,8 +11,12 @@ function molComments(molName) {
 
 switch (molName) {
     
+  case "SKILAMBDAEX":
+  var mol = "(&lambda;x.&lambda;y.y x x) K S I  is a term in lambda calculus enhanced with special names S, K and I, which are used as in SKI calculus.<br><br>It reduces well to I with chemSKI+&lambda;. It reduces with chemSKI to a graph whose root (FROUT node) edge is decorated with (K I) (K I), because of the FO node which is not part of chemSKI.";
+  break;
+
   case "SIISII":
-  var mol = "SII(SII) is a chemSKI quine. It is the equivalent in SKI combinators calculus of the <a href=\"https://mbuliga.github.io/quinegraphs/ice.html#omega\">Omega combinator in chemlambda</a>";
+  var mol = "SII(SII) is a chemSKI or chemSKI+&lambda; quine. It is the equivalent in SKI combinators calculus of the <a href=\"https://mbuliga.github.io/quinegraphs/ice.html#omega\">Omega combinator in chemlambda</a>";
   break;
     
   case "IA":
@@ -28,7 +32,7 @@ switch (molName) {
   break;
 
   case "SK": case "SK3":
-  var mol = "chemSKI rewrite terminSK. The node S plays two roles: as the combinaor S and as a fanout. The node K behaves as combinator K but also as a termination.</a>";
+  var mol = "chemSKI rewrite terminSK. The node S plays two roles: as the combinator S and as a fanout. The node K behaves as combinator K but also as a termination.</a>";
   break;
 
   case "IS":

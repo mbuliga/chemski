@@ -1,6 +1,6 @@
 // chemistries
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/chemistry.js
-// this version: 15.08.2020, 
+// this version: 24.08.2020, 
 
 
 
@@ -118,6 +118,40 @@ switch (id) {
 //   I-A + I-K <--> I-I + A-K
 ];
   break;
+
+// As in chemSKI the node S is a fanout, in this version the node S with ports 1 and 2 not connected becomes a FOE. 
+// Because the parser from lambda to mol uses also FO nodes, we have to introduce also LHS patterns for rewrites with FO instead of FOE. \
+// For example I-S from chemSKI turns into two rewrites: I-FOE and I-FO
+
+  case "CHEMSKI+LAMBDA":
+    var out = [
+  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},      // Kab = a, a beta     v    tokenIn: I-I        tokenOut:
+
+// Pruning rewrites  
+  {left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"},      // If = f                   v    tokenIn: Arrow      tokenOut: I-A
+  {left:"I",right:"FOE",action:"terminIFOE", named:"I-FOE", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
+  {left:"I",right:"FO",action:"terminIFOE", named:"I-FO", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
+  {left:"K",right:"FOE",action:"terminKFOE", named:"K-FOE", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: A-K        tokenOut: S-A
+  {left:"K",right:"FO",action:"terminKFOE", named:"K-FO", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: A-K        tokenOut: S-A
+  {left:"FOE",right:"K",action:"terminFOEK", named:"FOE-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: I-A        tokenOut: S-K
+  {left:"FO",right:"K",action:"terminFOEK", named:"FO-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: I-A        tokenOut: S-K
+  {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: I-K        tokenOut: I-A
+
+
+// DIST rewrites, with chemlambda available A-S becomes A-FOE which already exists
+//  {left:"A",right:"S",action:"DIST1", named:"A-S", t1:"S",t2:"S",t3:"A",t4:"A", kind:"DIST"}, //                        v    tokenIn: S-A        tokenOut:
+
+// NEUTRAL rewrites
+  {left:"S",right:"FOE",action:"SFOE", named:"S-FOE", kind:"DIST"},  //                                         v    tokenIn:            tokenOut:
+  {left:"S",right:"FO",action:"SFOE", named:"S-FO", kind:"DIST"},  //                                         v    tokenIn:            tokenOut:
+  {left:"S",right:"A",action:"SAFOE", named:"S-A", kind:"DIST"},      // Sabc = (ac)(bc)                     v    tokenIn:            tokenOut:
+
+// token rewrites
+//   I-A + S-K <--> I-K + S-A
+//   I-A + I-K <--> I-I + A-K
+];
+  break;
+
 
 
 
@@ -411,7 +445,7 @@ only matters if n1type, n2type match and if the node port e2 is of type "out"
         break;
 
 
-        case "terminIS":
+        case "terminIS": case "terminIFOE":
 
           if (e2type == "in") {
             var e1mid = findLinkedOfType(n1,"middle");
@@ -421,7 +455,7 @@ only matters if n1type, n2type match and if the node port e2 is of type "out"
           }
         break;
 
-        case "terminKS":
+        case "terminKS": case "terminKFOE":
 
           if (e2type == "in") {
             var e1mid = findLinkedOfType(n1,"middle");
@@ -432,7 +466,7 @@ only matters if n1type, n2type match and if the node port e2 is of type "out"
         break;
 
 
-        case "terminSK":
+        case "terminSK": case "terminFOEK":
 
             var e22mid = findLinkedOfType(n2,"middle");
             var e22out = findLinkedOfType(n2,"out");
@@ -447,7 +481,7 @@ only matters if n1type, n2type match and if the node port e2 is of type "out"
         break;
 
 
-        case "SS":
+        case "SS": case "SFOE":
 
           if (e2type == "out") {
             var e2mid = findLinkedOfType(n2,"middle");
@@ -462,7 +496,7 @@ only matters if n1type, n2type match and if the node port e2 is of type "out"
         break;
 
 
-        case "SA":
+        case "SA": case "SAFOE":
 
           if (e2type == "out") {
             var e2mid = findLinkedOfType(n2,"middle");
@@ -1271,7 +1305,7 @@ cross.
 
 
 
-    case "terminIS":
+    case "terminIS": case "terminIFOE":
 
 //    add one I node   (from token I-A) 
 
@@ -1289,7 +1323,7 @@ cross.
     break; 
 
 
-    case "terminKS":
+    case "terminKS": case "terminKFOE":
 
 //    add one K node   (from token A-K) 
 
@@ -1304,7 +1338,7 @@ cross.
     break; 
 
 
-    case "terminSK":
+    case "terminSK": case "terminFOEK":
 
 // identical to "term1", with the exception of the I-A token instead of Arrow or direct reconnection
 
@@ -1343,7 +1377,7 @@ cross.
     break;
 
 
-    case "SS":
+    case "SS":  case "SFOE":
 
       na = addNodeAndEdges("S",n1.x,n1.y);
       nb = addNodeAndEdges("S",n2.x,n2.y);
@@ -1405,6 +1439,50 @@ cross.
 
     break; 
 
+    case "SAFOE":
+
+      var e11 = findLinkedHalfEdge(d);              
+      var n2s = findLinkedCenter(e11);                
+      
+      var e2sout = findLinkedOfType(n2s,"out");
+      var e2smid = findLinkedOfType(n2s,"middle");
+
+      var e3in = findLinkedHalfEdge(e2sout);           
+      var n3s = findLinkedCenter(e3in);  
+
+      var e3sout = findLinkedOfType(n3s,"out");
+      var e3smid = findLinkedOfType(n3s,"middle");
+
+
+// create copies of the 4 nodes
+
+      var n2new = addNodeAndEdges("FOE",n2.x,n2.y);
+      var n1new = addNodeAndEdges("A",n2.x,n2.y);
+      var n2snew = addNodeAndEdges("A",n1.x,n1.y);
+      var n3snew = addNodeAndEdges("A",n1.x,n1.y);
+
+// connect the external half-edges
+
+      moveLink1(c,n1new[1]);
+      moveLink1(e2smid,n2snew[1]);
+      moveLink1(e3sout,n3snew[3]);
+      moveLink1(e3smid,n2new[1]);
+
+// recreate the internal half-edges
+
+      addLink(n1new[3],n3snew[1],2);
+      addLink(n2snew[3],n3snew[2],2);
+      addLink(n2new[2],n1new[2],2);
+      addLink(n2new[3],n2snew[2],2);
+
+// delete old nodes
+
+      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n1);
+      removeNodeAndEdges(n2s);
+      removeNodeAndEdges(n3s);
+
+    break; 
 
 
 //
