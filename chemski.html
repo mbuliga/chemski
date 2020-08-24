@@ -3,7 +3,7 @@
 
 <!-- based on a modification of the js version https://github.com/ishanpm/chemlambda-editor of my chemlambda v2, see the issue https://github.com/chorasimilarity/chemlambda-gui/issues/9 
 author: Marius Buliga
-last modified: 22.08.2020
+last modified: 24.08.2020
 //
 -->
 
@@ -21,16 +21,19 @@ last modified: 22.08.2020
 
 <script src="js/d3.v5.9.4.min.js"></script>
 <script src="js/jquery.min.js"></script>
-<script src="js/pagelook-vs.js"></script>
+<script src="js/pagelook-skilambda.js"></script>
 <script src="js/ioprep.js"></script>
 
 <div class="header">
   <span3>Cite as: </span3><div>chemSKI &amp; chemlambda.  <a href="http://imar.ro/~mbuliga/index.html">&copy; Marius Buliga</a> (2020), https://mbuliga.github.io/chemski/chemski.html<span id="citeas"></span></div><br>
-<span3>Version 22.08.2020</span3><br><br>
+<span3>Version 24.08.2020</span3><br><br>
 <span3>See also:</span3><br> <a href="https://chemlambda.github.io/index.html">All chemlambda projects</a>
 <div><br><br>
 German Kruszewski posed the problem of a graph-rewriting version of his and Tomas Mikolov <a href="https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258">Combinatory Chemistry: Towards a Simple Model of Emergent Evolution</a>, <a href="https://arxiv.org/abs/2003.07916">arXiv:2003.07916</a> in chemlambda style. <br><br>
-<a href="https://github.com/mbuliga/chemski">chemSKI</a> is a purely local graph rewrite system for the SKI combinators calculus which answers this problem.
+<a href="https://github.com/mbuliga/chemski">chemSKI</a> is a purely local graph rewrite system for the SKI combinators calculus which answers this problem.<br><br>
+In chemSKI there are 1-valent nodes for the combinators I and K and a 3-valent node for the combinator S. The rewrites concerning the node S are different, according to the existence of an edge between S node ports 1 and 2 (in this case S represents the combinator S) or not (in this case S is a fanout node). <br><br>
+There is a variant of chemSKI which is fully compatible with chemlambda rewrites, called "chemSKI+&lambda;" where the occurences of the node S when there is no edge between ports 1 and 2 are replaced with a chemlambda node FOE. You can toggle between chemSKI and chemSKI+&lambda; by using the "change" button.<br><br>
+You can explore the differences between chemSKI and chemSKI+&lambda; by using the parser window and button "&lambda;SKI -> mol". Even if the parser does transform any mix of SKI with lambda calculus (where the letters "S", "K", and "I" are always interpreted as combinators, not lambda calculus variables) into a mol file (i.e. into a graph), the rewrites of chemSKI do not interpret the node S as a fanout (in the relevant cases). Differently, if you change to the chemistry chemSKI+&lambda; then the reductions work, with the price of introducing the FOE node into the chemSKI formalism. <br><br>
 </div>
 </div>
 
@@ -40,12 +43,13 @@ German Kruszewski posed the problem of a graph-rewriting version of his and Toma
     <div class="scol-12"></div>
     <div class="scol-12"> <span3  id="buttonAge" class="image2" ></span3></div>
     <div class="scol-12"> <span3  id="whichChem" class="image2" ></span3></div>
-    <!-- <div class="scol-12">
+   <div class="scol-12"> <!-- 
       <span3 id="agetext">&nbsp;</span3><br><br><br><br>
-      <span3  id="buttonAge" class="image2" ></span3> <br><br><br>
-      <span3 id="chemtext">&nbsp;</span3><br><br>
-      <span3  id="whichChem" class="image2" ></span3> 
-    </div> -->
+      <span3  id="buttonAge" class="image2" ></span3>--> <br><br><br>
+      <span3 id="chemtext">chemSKI</span3>  
+      <br><br>
+      <span3  id="whichChem2" class="image2" ></span3> 
+    </div> 
   </div>
   <div class="col-7 menu">
     <ul>
@@ -53,18 +57,19 @@ German Kruszewski posed the problem of a graph-rewriting version of his and Toma
         <span2> 
           <select  class="theme-construction" id="listofmols" onchange="selectionLambda();">
             <option value="SKInote">MENU</option>
-            <option value="IA">termIA rewrite </option>
-            <option value="SK">terminSK rewrite (at port 2 of S)</option>
-            <option value="SK3">terminSK rewrite (at port 3 of S)</option>
-            <option value="AS">AS (DIST1) rewrite</option>
-            <option value="IS">terminIS rewrite</option>
-            <option value="KS">terminKS rewrite</option>
-            <option value="SS1">SS rewrite</option>
-            <option value="AK">termAK rewrite</option>
-            <option value="KAB">KA rewrite </option>
-            <option value="SABC">SA rewrite </option>
             <option value="SKKI">SKKI --> I </option>
             <option value="SIISII"> (SII)(SII) </option>
+            <option value="SKILAMBDAEX"> (&lambda;x.&lambda;y.y x x) K S I </option>
+            <option value="IA">chemSKI and chemSKI+&lambda; rewrite I-A</option>
+            <option value="SK">only chemSKI rewrite S-K (at port 2 of S)</option>
+            <option value="SK3">only chemSKI rewrite S-K (at port 3 of S)</option>
+            <option value="AS">only chemSKI rewrite A-S</option>
+            <option value="IS">only chemSKI rewrite I-S</option>
+            <option value="KS">only chemSKI rewrite K-S</option>
+            <option value="SS1">only chemSKI rewrite S-S</option>
+            <option value="AK">chemSKI and chemSKI+&lambda; rewrite A-K</option>
+            <option value="KAB">chemSKI and chemSKI+&lambda; rewrite K-A </option>
+            <option value="SABC">chemSKI and chemSKI+&lambda; rewrite S-A</option>
           </select>
         </span2> 
       </li>
