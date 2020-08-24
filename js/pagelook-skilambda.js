@@ -306,6 +306,8 @@ function setOlder() {
 function setChemPlus() {
 setSpeed(0); 
 setStart(0); 
+
+var whatsInThere = document.getElementById('inputlambda').value;
   if (isChemlambda == 1) {
     isChemlambda = 0;
     chemistryChoice();
@@ -317,13 +319,16 @@ setStart(0);
     document.getElementById("chemtext").innerHTML = "chemSKI";
 
   }
+  if (whatsInThere == "") {
+  voidMolToScreenAfter(); 
+  molSelect(); 
+  exportMolToScreen();
+  } else {
+  lambdaToMol(); 
+  reloadCode();
+  }
+  setComb(1);setSpeed(1); setStart(1); loop();
 
-lambdaToMol(); 
-reloadCode();
-
-setComb(1);setSpeed(1); setStart(1); loop();
-
-//  selectionLambda();
 }
 
 
