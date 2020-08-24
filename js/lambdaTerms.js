@@ -8,6 +8,19 @@ forked from https://github.com/mbuliga/quinegraphs/blob/master/js/lambdaTerms.js
 function termLibrary(lambdaName) {
 
 switch (lambdaName) {
+
+  case "SKKI":
+  var lambdaTerm = "S K K I";
+  break;
+
+  case "SKILAMBDAEX":
+  var lambdaTerm = "(\\x.\\y.y x x) K S I";
+  break;
+
+  case "SIISII":
+  var lambdaTerm = "(S I I) (S I I)";
+  break;
+
   case "lambdanote":
   var lambdaTerm = "(\\n.(\\f.(\\x.(((n (\\g.(\\h.(h (g f))))) (\\u.x)) (\\u.u))))) (((\\b.(\\e.(e b))) (\\f.(\\x.(f (f (f x)))))) (\\f.(\\x.(f(f (f (f x)))))))";
   break;

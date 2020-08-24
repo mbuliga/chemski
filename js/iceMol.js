@@ -17,7 +17,13 @@ we use space, therefore we can't admit space or newline in the alphabet E).
 function molLibrary(molName) {
 
 switch (molName) {
-// chemSKI examples
+// chemSKI and chemSKI+&lambda; examples
+
+  case "SKILAMBDAEX":
+  var mol = "FROUT 1^L 2 3 4^L 5 6 2^A 6 7 8^FO 3 7 9^A 8 9 5^A 4 10 11^K 10^A 11 12 13^S 14 14 12^A 13 15 1^I 15";
+  break;
+
+
 
   case "IA":
   var mol = "I 1^A 1 2 3";
