@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<!-- modified from chemSKI & chemlambda. © Marius Buliga (2020), https://mbuliga.github.io/chemski/chemski.html
+author: Marius Buliga
+last modified: 28.05.2023, from the version of 24.08.2020
+//
+-->
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css" href="css/icequine-on-white.css">
+
+<title>chemSKI with tokens: world building and economy in the SKI universe</title>
+</head>
+
+
+<body style="overflow: scroll;">
+
+<script src="js/d3.v5.9.4.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/pagelook-skilambda.js"></script>
+<script src="js/ioprep.js"></script>
+
+<div class="header">
+  <span3>Cite as: </span3><div>chemSKI with tokens: world building and economy in the SKI universe. <a href="http://imar.ro/~mbuliga/index.html">&copy; Marius Buliga</a> (2023), https://mbuliga.github.io/chemski/chemski-with-tokens.html<span id="citeas"></span></div><br>
+<span3>Version 28.05.2023</span3><br><br>
+<span3>See also:</span3><br> <a href="https://chemlambda.github.io/index.html">All chemlambda projects</a>
+<div><br><br>
+
+<h1>chemSKI with tokens: world building and economy in the SKI universe</h1><br><br>
+
+<h3 id="Contents">Contents</h3>
+<h4><a href="#Introduction">Introduction</a></h4>
+<h4><a href="#GraphsAndNodes">Graphs and nodes</a></h4>
+<h4><a href="#ChemskiRewrites">chemSKI rewrites</a></h4>
+<h4><a href="#ChemskiPlusChemlambda">chemSKI + chemlambda v2</a></h4>
+<h4><a href="#ChemskiUsed">How are chemSKI rewrites used</a></h4>
+<h4><a href="#FromSkiToChemski">From SKI to chemSKI</a></h4>
+<h4><a href="#PlayPlace">Play with chemSKI</a></h4>
+
+
+
+<br><br>
+
+
+<h2 id="Introduction">Introduction</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br><br>
+
+In the article <a href="https://mbuliga.github.io/chemski/chemski.html">chemSKI and chemlambda</a>  I introduced the  purely local graph rewrite system chemSKI for the SKI combinators calculus. I was motivated to build chemSKI because in the article  <a href="https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258">Combinatory Chemistry: Towards a Simple Model of Emergent Evolution</a>, <a href="https://arxiv.org/abs/2003.07916">arXiv:2003.07916</a> German Kruszewski and Tomas Mikolov asked for a graph-rewriting version of their  term rewrite system in chemlambda style. chemSKI is not a graph rewrite version of Combinatory Chemistry, though. Instead is a confluent graph rewrite system where all rewrites are local, which moreover can be used to do SKI calculus reductions. This is true in the same sense that Lafont Interaction Combinators can be used to do lambda calculus reductions. That is because there is a parser from a SKI term to a chemSKI graph and a partial inverse function which can associate a SKI term to a free edge of a chemSKI graph, such that term reductions in SKI calculus correspond to sequences of graph rewrites in chemSKI.   <br><br>
+Here I explain chemSKI <a href="https://github.com/mbuliga/chemski">[chemSKI repository]</a> with tokens, where the graph rewrites of chemSKI are made conservative by the use of tokens. We thus achieve two goals: conservative rewrites in a chemical style, and a new estimation of the cost of a computation. <br><br>
+
+<h2 id="GraphsAndNodes">Graphs and nodes of chemSKI</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+The graphs are called "molecules" and they are formed by nodes connected by edges. Each node has a type and 1, 2 or 3 numbered node ports. The types of nodes of chemSKI are S, K, I, A, Arrow, FRIN, FROUT, see <a href="https://github.com/mbuliga/chemski/blob/master/js/nodes.js#L97">[nodes.js line 21]</a> (contains the all types of nodes used in the chemlambda project). 
+<br><br>
+
+<img src="img/node3val.jpg" alt="nodes of chemSKI" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+There are two 1-valent nodes, for the combinators I and K, and two 3-valent nodes, one for the combinator S and simultaneously for fanout, the other for the application (A like in <a href="https://mbuliga.github.io/quinegraphs/history-of-chemlambda.html#ChemlambdaV2">chemlambda v2</a>). There are also two 1-valent nodes, FRIN (free in) and FROUT (free out) and a 2-valent node Arrow which serve the same roles as in chemlambda.<br><br>
+
+As explained in <a href="https://arxiv.org/abs/2003.14332">arXiv.2003.14332</a>, we use the mol notation, for example a 3-valent node S is described by the string "S a b c" which means that the node type is "S", the port 1 of the node is linked to the edge named "a", the port 2 of the node is linked to the edge named "b" and finally the port 3 of the node is linked to the edge named "c". <br><br>
+
+<img src="img/nodeS.jpg" alt="node S" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+ The edge names are arbitrary strings (with letters a-z, A-Z, 0-9, without space character) and different edges of the graph have different names. To each node port there is only one edge connected. They follow the same conventions as <a href="https://mbuliga.github.io/quinegraphs/history-of-chemlambda.html#ChemlambdaV2">chemlambda v2</a>. <br><br> 
+
+The color codes for node types and ports <a href="https://github.com/mbuliga/chemski/blob/master/js/nodes.js#L153">[nodes.js line 153]</a> are described in the next figure.<br> <br>
+
+<img src="img/colorcodes.jpg" alt="color codes for chemSKI" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+
+
+
+FRIN and FROUT are used to cap the free half-edges of the graph, if any.  This is done according to the type of the ports of nodes: the first port is always "in", the last port is always "out" and, for the middle ports of the two trivalent nodes the rules are: for the node S the middle port is of type "out", for the node "A" the middle port is of type "in". in the following figure we see how or and  <br><br> 
+
+<img src="img/node3val2.jpg" alt="FRIN and FROUT added to nodes" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+The Arrow node was introduced to allow simultaneous application of rewrites, followed by the deletion of the introduced Arrow nodes by the rewrite COMB (which "combs" the graph). Together with FRIN and FROUT, they are used in all chemlambda rewrite systems.<br><br>
+
+
+It is possible to have edges connected to the same node, but at different ports. For example "S b b a" describes a node of type "S", with an edge named "b" connecting port 1 and port 2 of that node.<br><br>
+
+<img src="img/combinators.jpg" alt="combinators, application, fanout" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+  The rewrites concerning the node S are different, according to the existence of an edge between S node ports 1 and 2 (in this case S represents the combinator S) or not (in this case S is a fanout node). <br><br>
+
+<h2 id="ChemskiRewrites">chemSKI rewrites</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+The list of rewrites of chemSKI is the following, in mol notation and graphically. <br><br>
+
+<ul>
+      <li><a href="#RewriteKA">K-A corresponds to the SKI combinators rewrite  K a b -> a</a></li>
+      <li><a href="#RewriteIA">I-A corresponds to the SKI combinators rewrite  I a -> a</a></li>
+      <li><a href="#RewriteIS">I-S duplicates I</a></li>
+      <li><a href="#RewriteKS">K-S duplicates K</a></li>
+      <li><a href="#RewriteSK">S-K where K prunes port 2 or 3 of S as a fanout</a></li>
+      <li><a href="#RewriteAK">A-K where K prunes an application node A</a></li>
+      <li><a href="#RewriteAS">A-S duplicates A and S as a fanout</a></li>
+      <li><a href="#RewriteSS">S-S duplicates S as a combinator</a></li>
+      <li><a href="#RewriteSA">S-A corresponds to the SKI combinators rewrite S a b c -> (a c) (b c)</a></li>
+</ul>     
+
+Each rewrite is described by a left hand side (LHS) and a right hand side (RHS) pattern. There is also a chemical interpretation, where we see each rewrite as a chemical reaction, which transforms the LHS into RHS. In order to be conservative in nodes and edges, we need to add tokens, ie a finite number (up to isomorphism) of small graphs.<br><br>
+
+The rewrites are defined  in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L97">[chemistry.js from line 99]</a><br><br>
+
+"function chemistry(id) { <br>
+switch (id) { <br>
+case "CHEMSKI": <br>
+... }}"<br><br>
+
+by a string like for example for the rewrite I-S:  <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L103">[chemistry.js line 102]</a><br><br>
+
+{left:"I",right:"S",action:"terminIS", named:"I-S", kind:"TERMINATION"}<br><br>
+
+called in the programs comments "a transform".  The meaning of this string is the following. A rewrite is mathematically described by a pair (LHS,RHS), where LHS and RHS are graphs, in mol notation. In order to use a rewrite we need first to identify the LHS pattern in the graph. For this we visit each node of the graph, ie we visit each line in the mol description of the graph. Once we are at a node n1, we verify if the node type is the one from the "right" field. Then, according to the name of the "action" field, there is an algorithm which tries to visit the graph, going from the node n1 by the edges of the graph. The algorithm tries to identify the node n2, which should have the type of the "left" field. The algorithm describes a path in the LHS, starting from n1, passing by n2, in a way which allows to decide if there is a subgraph which is isomorphic with the LHS pattern.<br><br>
+
+The "named" field is the name of the rewrite which we use in explanations, following the convention to use the node types  "left"-"right". The field "kind" describes what kind of rewrite we have, for example "TERMINATION" describe rewrites which involve pruning nodes connected to a "termination" node. <br><br>
+
+Therefore, the important fields used for the rewrites are "left", "right" and "action".<br><br>
+
+As a comment on the same line as the transform string, there is a pair, like for that rewrite I-S<br><br>
+
+"tokenIn: I-A   &nbsp;  &nbsp;   tokenOut: S-A"<br><br>
+
+which indicates to the reader a way to make the rewrite conservative by the use of tokens.<br><br>
+
+
+
+
+<h4 id="RewriteKA">The rewrite K-A</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> corresponds to the SKI combinators rewrite  K a b -> a.  It is a rewrite of kind "BETA".<br><br>
+{left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"}<br><br>
+ 
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L99">[chemistry.js line 99]</a>. In mol notation, is described as: <br><br>
+LHS = K 1, A 1 a 2, A 2 b c<br>
+
+RHS = K b, Arrow a c <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/KA.jpg" alt="K-A rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens Arrow and A-A.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = K 1, A 1 a 2, A 2 b c, Arrow d d<br>
+RHS with tokens = K b, A 1 d 1, A 2 d 2, Arrow a c<br><br>
+Borrowing from the <a href="https://github.com/mbuliga/hapax">Project Hapax</a>, we see that we can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b c)<br>
+(0 8 2 3 b 1 6 5 c 7 a 4 9)
+<br><br>
+
+
+<h4 id="RewriteIA">The rewrite I-A</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> corresponds to the SKI combinators rewrite  I a -> a.  <br><br>
+{left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"}<br><br>
+
+
+ It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L102">[chemistry.js line 102]</a>. In mol notation, is described as: <br><br>
+LHS = I 1, A 1 a b<br>
+
+RHS = Arrow a b <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/IA.jpg" alt="I-A rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens Arrow and I-A.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = I 1, A 1 a b, Arrow c c<br> 
+RHS with tokens = I 1, A c 1 c, Arrow a b<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8)<br>
+(0 1 2 7 3 8 6 4 5)
+<br><br>
+
+<h4 id="RewriteIS">The rewrite I-S</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> used to duplicate a I combinator node by the S node which plays the role of a fanout in this rewrite. It can also be seen as a rewrite which eliminates a S node. <br><br>
+{left:"I",right:"S",action:"terminIS", named:"I-S", kind:"TERMINATION"}<br><br>
+
+
+ It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L103">[chemistry.js line 103]</a>. In mol notation, is described as: <br><br>
+LHS = I a, S a b c<br>
+
+RHS = I b, I c <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/IS.jpg" alt="I-S rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens I-A and S-A.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = I a, S a b c, I d, A e d e<br>
+RHS with tokens = I b, S a d a, I c, A e d e<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b)<br>
+(0 4 2 1 7 3 6 5 8 9 a b)
+<br><br>
+
+
+<h4 id="RewriteKS">The rewrite K-S</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> used to duplicate a K combinator node by the S node which plays the role of a fanout in this rewrite.  <br><br>
+{left:"K",right:"S",action:"terminKS", named:"K-S", kind:"TERMINATION"}<br><br>
+
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L104">[chemistry.js line 104]</a>. In mol notation, the  K-S rewrite is described as: <br><br>
+LHS = K a, S a b c<br>
+
+RHS = K b, K c <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/KS.jpg" alt="K-S rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens S-K and S-S.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = K a, S a b c, K d, S e d e<br>
+RHS with tokens = K b, S a d a, K c, S e d e<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the same permutation as the one from the rewrite  I-S <br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b)<br>
+(0 4 2 1 7 3 6 5 8 9 a b)
+<br><br>
+
+
+<h4 id="RewriteSK">The rewrite S-K</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> has two LHS patterns, in both cases the K node, connected at port 2 or port 3 of a S node (when it has the role of a fanout), prunes the respective port.<br><br>
+{left:"S",right:"K",action:"terminSK", named:"S-K", kind:"TERMINATION"}<br><br>
+
+
+ It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L105">[chemistry.js line 105]</a>. In mol notation, the first S-K rewrite is described as: <br><br>
+LHS = S a b c, K c<br>
+
+RHS = Arrow a b <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/SK.jpg" alt="first S-K rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens Arrow and S-L.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = S a b c, K c, Arrow d d<br>
+RHS with tokens = S d c d, K c, Arrow a b<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation <br><br> 
+(0 1 2 3 4 5 6 7 8)<br>
+(0 7 3 8 4 5 6 1 2)
+<br><br>
+
+
+The second S-K rewrite is described as: <br><br>
+LHS = S a c b, K c<br>
+
+RHS = Arrow a b <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/SK2.jpg" alt="second S-K rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens Arrow and S-K.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = S a c b, K c, Arrow d d<br> 
+RHS with tokens = S d c d, K c, Arrow a b<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the  permutation <br><br> 
+(0 1 2 3 4 5 6 7 8)<br>
+(0 7 2 8 4 5 6 1 3)
+<br><br>
+
+<h4 id="RewriteAK">The rewrite A-K</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> is a pruning rewrite where a K combinator node connected to the port 3 of an application A node transforms into a pair of K nodes.<br><br>
+{left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}<br><br>
+
+
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L106">[chemistry.js line 106]</a>. In mol notation, the rewrite is described as: <br><br>
+LHS = A a b c, K c<br>
+
+RHS = K a, K b <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/AK.jpg" alt="A-K rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the tokens S-K and S-A.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = A a b c, K c, S d e d, K e<br>         
+RHS with tokens = A c e c, K a, S d e d, K b<br><br>  
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b)<br>
+(0 3 8 5 4 1 6 7 8 9 a 2)
+<br><br>
+
+<h4 id="RewriteAS">The rewrite A-S</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> duplicates a pair of nodes A and S, thus serving to duplicate A nodes and also S nodes in their role of fanouts.<br><br>
+{left:"A",right:"S",action:"DIST1", named:"A-S", t1:"S",t2:"S",t3:"A",t4:"A", kind:"DIST"}<br><br>
+The kind "DIST" takes the name from "distributivity", but I used the name as a generic one for duplication rewrites or even for rewrites which do not increase the number of nodes. The rewrite. However the action field is "DIST1", which is a precise description  because there are 8 types of truly inspired from "distributivity" rewrites (DIST0 to DIST7), as explained in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L820">[chemistry.js from line 820]</a>. In the case of DIST0 to DIST7 rewrites there are new fields "t1", ..., "t4" which are used for the types of nodes in the RHS of the rewrite.<br><br> 
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L110">[chemistry.js line 110]</a>. In mol notation, the rewrite is described as: <br><br>
+LHS = A a b e, S e c d<br>
+
+RHS = S a e f, S b g h, A e g c, A f h d <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/AS.jpg" alt="A-S rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with the token  S-A.<br><br>
+
+The LHS and RHS patterns with the tokens, are: <br><br> 
+LHS with tokens = S e c d, S f h f, A a b e, A g h g<br>     
+RHS with tokens = S a e f, S b g h, A e g c, A f h d<br><br>  
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation <br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
+(0 9 1 5 4 a d 6 8 b f 2 c 7 e 3)
+<br><br>
+
+
+<h4 id="RewriteSS">The rewrite S-S</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> is a neutral rewrite (ie no tokens needed). It uses a S node in the role of an S combinator, connected to another S node in the role of fanout. It duplicates the S combinator, but this is done by rewiring of the two S nodes available.<br><br>
+{left:"S",right:"S",action:"SS", named:"S-S", kind:"DIST"}<br><br>
+Mind that even if the kind is "DIST", the action is not one of DIST0 to DIST7, therefore here is a case where I used the kind "DIST" as a placeholder for duplication. This is also justified by the fact that the rewrite does not decrease the number of nodes, it is therefore put in the category of rewrites which is favored by the "GROW" strategy. <br><br>
+
+This is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L113">[chemistry.js line 113]</a>. In mol notation, the rewrite is described as: <br><br>
+LHS = S a a b, S b c d<br>
+
+RHS = S a a c, S b b d <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/SS.jpg" alt="S-S rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with no tokens.<br><br>
+
+The LHS and RHS patterns with the tokens, are the same, because the rewrite is neutral: <br><br> 
+LHS with tokens = S a a b, S b c d<br>              
+RHS with tokens = S a a c, S b b d<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7)<br>
+(0 1 2 6 4 3 5 7)
+<br><br>
+
+
+<h4 id="RewriteSA">The rewrite S-A</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4>  is the graphical rewrite version of S a b c -> (a c) (b c). Instead of duplicating "c", it just rewires the LHS where the combinator S appears as an S node with ports 1 and 2 connected, into the RHS where the node S has not the ports 1 and 2 connected, thus it plays the role of a fanout. It is therefore a neutral rewrite (no tokens needed). <br><br>
+{left:"S",right:"A",action:"SA", named:"S-A", kind:"DIST"}<br><br>
+The kind of this rewrite is "DIST", because it does not decrease the number of nodes, therefore it is favored by the rewrite strategy "GROW". It is not a DIST0 to DIST7 rewrite, because the action is "SA".<br><br>
+
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L114">[chemistry.js line 114]</a>. In mol notation, the rewrite is described as: <br><br>
+LHS = S 1 1 2, A 2 a 3, A 3 b 4, A 4 c d<br>
+
+RHS = S c 1 2, A a 1 3, A b 2 4, A 3 4 d <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/SA.jpg" alt="S-A rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with no tokens needed.<br><br>
+
+The LHS and RHS patterns with the tokens, are the same: <br><br> 
+LHS with tokens = S 1 1 2, A 2 a 3, A 3 b 4, A 4 c d<br>      
+RHS with tokens = S c 1 2, A a 1 3, A b 2 4, A 3 4 d<br><br>
+
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
+(0 e 1 3 4 6 2 7 8 a 5 b c 9 d f)
+<br><br>
+
+<h2 id="ChemskiPlusChemlambda">chemSKI +  chemlambda v2</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+There is a variant of chemSKI which is fully compatible with chemlambda v2 rewrites, called "chemSKI+&lambda;" where the occurences of the node S when there is no edge between ports 1 and 2 are replaced with a chemlambda node FOE. You can toggle between chemSKI and chemSKI+&lambda; by using the "change" button.<br><br>
+You can explore the differences between chemSKI and chemSKI+&lambda; by using the parser window and button "&lambda;SKI -> mol". <br><br>
+The parser transforms any mix of SKI with lambda calculus (where the letters "S", "K", and "I" are always interpreted as combinators, not lambda calculus variables) into a mol file (i.e. into a graph). This graph can be reduced with chemSKI plus chemlambda or chemSKI+&lambda; plus chemlambda. <br><br>
+In the case of chemSKI the chemlambda nodes do not interpret the node S as a fanout, nor the pure chemSKI nodes (I,S,K) do not see FO and FOE as fanouts. Differently, if you change to the chemistry chemSKI+&lambda; then the reductions work better, with the price of mixing the FO and FOE nodes into the pure chemSKI formalism. <br><br>
+
+<h2> chemSKI + directed Interaction Combinators?</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+There is not yet a variant of chemSKI compatible with dirIC (<a href="https://mbuliga.github.io/quinegraphs/ic-vs-chem.html#icvschem">directed Interaction Combinators</a>), because in dirIC the rewrite A-FOE from chemlambda is replaced by a rewrite FI-A. This breaks the adaptation chemSKI+&lambda; of chemSKI to chemlambda by replacing the node S as a fanout by a node FOE. It is an interesting problem to consider.<br><br> 
+
+
+<h2 id="ChemskiUsed">How are chemSKI rewrites used</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+All the programs are abundantly commented, for the convenience of the reader. The way rewrites are done by the programs is described shortly here.<br><br>
+
+The recognition of the LHS pattern is defined in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L293">[chemistry.js from line 293]</a> in the function 
+findTransform(n1), where "n1" is the node where the recognition of the LHS pattern algorithm starts (it should have the type ot the "right" field of the transform). The rewrite is identified by the "action" field, for our example, the rewrite I-S, we have  action:"terminIS", and the recognition of the LHS pattern for that transform is done at 
+<a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L448">[chemistry.js lines 448-456]</a>, which starts with:<br><br>
+
+"case "terminIS": case "terminIFOE": "<br><br>
+
+(Thus  we may have the same algorithm of recognizing LHS patterns for different action fields, which is not surprising, because the algorithm describes an abstract way to visit a pattern and to perform checks.)<br><br>
+
+If the LHS pattern of the transform trans (defined by the transform  "action" field and the node n1 seen as a node of the type defined by the "right" field) is found then the function returns the transform trans. Then the graph rewrite is done by the function doTransform(n1, trans), defined in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L602">[chemistry.js from line 602]</a>. At the level of mol files, doing the rewrite means: eliminate the lines in the mol file which correspond to the nodes from the identified LHS pattern, add to the mol file the new lines corresponding to the RHS pattern.<br><br>
+
+There is no canonical way, no particular order of the lines in the mol file associated to a graph. Any permutation of the lines in the mol file describes the same graph. Any renaming of the edges describes the same graph. That is why we randomly shuffle the mol file before looking for rewrites and we also randomize the choice of rewrites which will be applied. The probability of application of rewrites depends on their "kind", but roughly there is a parameter  which is controlled by the "rewrites weight slider" which favors either the rewrites of the kind which increases (or does not decrease)the number of nodes (ie "GROW"), typically of kind "DIST",  or the kind which decreases the number of nodes (ie "SLIM"), such as kinds "TERMINATION" or "BETA". Another control we have is to associate to the edges of the graph an age (how many time steps since that edge appeared) and then to favor the rewrites performed on older edges first. As the programs don't do rewrites in parallel (although the first version, in awk, <a href="https://github.com/chorasimilarity/chemlambda-gui/blob/gh-pages/dynamic/README.md">chemlambda-gui</a>, does this for chemlambda v2), this age-based choice of rewrites is a good approximation of the choice to do as much as possible independent rewrites, as soon as possible. This age-based strategy is not used in this version of chemSKI. See <a href="https://mbuliga.github.io/quinegraphs/ic-vs-chem.html">Alife properties of directed interaction combinators vs. chemlambda.  Marius Buliga (2020)</a>, <a href="https://arxiv.org/abs/2005.06060">arXiv:2005.06060</a>.<br><br>
+
+
+
+
+<h2 id="FromSkiToChemski">From SKI to chemSKI</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+The chemSKI molecule associated to a SKI combinator term is simply the syntax tree of the term, which has as leaves the S,K,I combinator nodes. Go to <a href="#PlayPlace">Play with chemSKI</a> to use the parser. Use the window "λ or SKI -> mol" to parse a SKI combinator to chemSKI. Actually this is a parser from lambda calculus AND SKI combinators to chemlambda AND chemSKI, where the letters "S", "K" and "I" are treated as in SKI. The source is at <a href="https://github.com/mbuliga/chemski/blob/master/js/0parser.js">[0parser.js]</a>. <br>
+
+Examples:<br>
+SII will not work, use a space for application: S I I will be understood as the term (S I) I. <br>
+(S I I) (S I I) will work<br>
+Also, the parser works  for lambda terms, like (\x.x x) (\x.x x) or  (\x.\y.x) z. <br><br>
+
+
+
+
+
+<h2 id="PlayPlace">Play with chemSKI</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+
+
+</div>
+</div>
+
+<div class="row">
+  <div class="col-2 menu" style="text-align: left;">
+    <div class="scol-12"></div>
+    <div class="scol-12"></div>
+    <div class="scol-12"> </div>
+    <div class="scol-12"> </div>
+   <div class="scol-12"> <!-- 
+      <span3 id="agetext">&nbsp;</span3><br><br><br><br>
+      <span3  id="buttonAge" class="image2" ></span3>--> <br><br><br>
+      <span3 id="chemtext">chemSKI</span3>  
+      <br><br>
+      <span3  id="whichChem2" class="image2" ></span3> 
+    </div> 
+  </div>
+  <div class="col-7 menu">
+    <ul>
+      <li>    
+        <span2> 
+          <select  class="theme-construction" id="listofmols" onchange="selectionLambda();">
+            <option value="SKInote">MENU</option>
+            <option value="SKKI">SKKI --> I </option>
+            <option value="SIISII"> (SII)(SII) </option>
+            <option value="SKILAMBDAEX"> (&lambda;x.&lambda;y.y x x) K S I </option>
+            <option value="IA">chemSKI and chemSKI+&lambda; rewrite I-A</option>
+            <option value="SK">only chemSKI rewrite S-K (at port 2 of S)</option>
+            <option value="SK3">only chemSKI rewrite S-K (at port 3 of S)</option>
+            <option value="AS">only chemSKI rewrite A-S</option>
+            <option value="IS">only chemSKI rewrite I-S</option>
+            <option value="KS">only chemSKI rewrite K-S</option>
+            <option value="SS1">only chemSKI rewrite S-S</option>
+            <option value="AK">chemSKI and chemSKI+&lambda; rewrite A-K</option>
+            <option value="KAB">chemSKI and chemSKI+&lambda; rewrite K-A </option>
+            <option value="SABC">chemSKI and chemSKI+&lambda; rewrite S-A</option>
+          </select>
+        </span2> 
+      </li>
+      <li> &nbsp; <br>  <span3  id="buttonAge" class="image2" ></span3> <br> <br> <div><textarea id="inputlambda" class="image2" style="height: 80px; width: 100%;  background-color: #010101; 
+ color: #6495ED;  font-size: 14px;"></textarea> </div>
+      </li>
+      <li> &nbsp; <br> <span3  id="whichChem" class="image2" ></span3> <br> <br><div><textarea id="evaluation" class="image2" style="height: 80px; width: 100%;  background-color: #010101; 
+ color: #6495ED;  font-size: 14px;"></textarea> </div></li>
+      <li>
+         <span3>rewrites weights slider</span3> <div class="slidecontainer">GROW &nbsp;<input class="slider" type="range" min="0" max="100" value="50" id="rewritesRange"> &nbsp; SLIM</div>
+      </li>
+    </ul>
+  </div>
+  <div class="col-3 menu" style="text-align: left;">
+    <span3 style="text-align: left;"> nodes &sim; </span3><span id="nodenumber"></span><br><br>
+    <span3 id="errors"></span3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-2 menu">
+    <!-- <div class="scol-12"> <span3  id="lambdatomolbutton" class="image2" ></span3></div> -->
+  </div>
+  <div class="col-7 menu">
+<!--<div><textarea id="inputlambda" style="height: 50px; width: 100%;"></textarea> </div> -->
+  </div>
+  <div class="col-3 menu" style="text-align: left;">
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-2 menu">
+  <!--  <div class="scol-12"> <span3  id="button0" class="image2" ></span3></div> -->
+    <div class="scol-12"> <span3  id="button1" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button2" class="image2" ></span3></div>
+    <div class="scol-12"> <span3  id="button3" class="image2" ></span3></div>
+  <!--  <div class="scol-12"> <span3  id="button4" class="image2" ></span3></div>  -->
+  </div>
+  <div class="col-7 menu">
+    <ul>
+      <li> <div id="svgdiv"> </div></li>
+      <li><span3>gravity slider</span3> <div class="slidecontainer">MIN &nbsp;<input class="slider" type="range" min="1" max="250" value="150" id="gravRange"> &nbsp; MAX</div></li>
+      <li><span2>CODE: </span2><span id="molyoulookat"></span></li>
+      <li><span> (Rewrites stop at max.  </span><span id="maxnodenumber">1024</span> nodes<span>)</span></li>
+    </ul>
+  </div>
+  <div class="col-3 menu" style="text-align: left;">
+    <span id="comments" ></span>
+  </div>
+</div>
+
+<div class="row">
+      <div class="scol-6" style="text-align: left;">
+        <span2>before:</span2><br><br>
+        <span id="puttransformcachealt"></span>
+      </div> 
+      <div class="scol-6" style="text-align: left;">
+        <span2>chosen:</span2><br><br>
+        <span id="chosentransform"></span>
+      </div>
+      <div class="scol-6" style="text-align: left;">
+        <span2>after:</span2><br><br>
+        <span id="puttransformcachealtafter"></span>
+      </div>
+    <div class="scol-6" style="text-align: left;">
+      <span2>mol before:</span2><br><br>
+      <span id="molexport"></span>
+    </div>
+    <div class="scol-6" style="text-align: left;">
+      <span2>mol after:</span2><br><br>
+      <span id="molexportafter"></span>
+    </div>
+</div>
+
+
+<script src="js/iceMol.js"></script>
+<script src="js/iceComments.js"></script>
+<script src="js/parameters.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/chemistry.js"></script>
+<!-- <script src="js/reactions.js"></script> -->
+<script src="js/myD3Graph.js"></script>
+<script src="js/icequine.js"></script>
+<script src="js/0parser.js"></script>
+<script src="js/lambdaTerms.js"></script>
+
+
+<script>
+var whichP = location.hash;
+whichP = whichP.replace(/#/g, "");
+if (whichP != "") {
+document.getElementById("listofmols").value = whichP;
+} else {
+document.getElementById("listofmols").value = "SKInote";
+}
+whichButtons("SKInote"); 
+selectionLambda();
+</script>
+
+</body>
+</html>
+
+
