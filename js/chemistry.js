@@ -1,6 +1,6 @@
 // chemistries
-// forked from https://github.com/mbuliga/quinegraphs/blob/master/js/chemistry.js
-// this version: 24.08.2020, 
+// forked from https://github.com/mbuliga/quinegraphs/blob/master/js/chemistry.js , version 24.08.2020
+// this version: 26.05.2023, 
 
 
 
@@ -96,26 +96,26 @@ switch (id) {
 //
   case "CHEMSKI":
     var out = [
-  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},      // Kab = a, a beta     v    tokenIn: I-I        tokenOut:
+  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},                 // Kab = a, a beta          v    tokenIn: Arrow      tokenOut: A-A
 
 // Pruning rewrites  
-  {left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"},      // If = f                   v    tokenIn: Arrow      tokenOut: I-A
+  {left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"},      // Ia = a                   v    tokenIn: Arrow      tokenOut: I-A
   {left:"I",right:"S",action:"terminIS", named:"I-S", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
-  {left:"K",right:"S",action:"terminKS", named:"K-S", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: A-K        tokenOut: S-A
-  {left:"S",right:"K",action:"terminSK", named:"S-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: I-A        tokenOut: S-K
-  {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: I-K        tokenOut: I-A
+  {left:"K",right:"S",action:"terminKS", named:"K-S", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: S-K        tokenOut: S-S
+  {left:"S",right:"K",action:"terminSK", named:"S-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: Arrow      tokenOut: S-K
+  {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: S-K        tokenOut: S-A
 
 
 // DIST rewrites
-  {left:"A",right:"S",action:"DIST1", named:"A-S", t1:"S",t2:"S",t3:"A",t4:"A", kind:"DIST"}, //                        v    tokenIn: S-A        tokenOut:
+  {left:"A",right:"S",action:"DIST1", named:"A-S", t1:"S",t2:"S",t3:"A",t4:"A", kind:"DIST"}, //          v    tokenIn: S-A        tokenOut:
 
 // NEUTRAL rewrites
   {left:"S",right:"S",action:"SS", named:"S-S", kind:"DIST"},  //                                         v    tokenIn:            tokenOut:
   {left:"S",right:"A",action:"SA", named:"S-A", kind:"DIST"},      // Sabc = (ac)(bc)                     v    tokenIn:            tokenOut:
 
 // token rewrites
-//   I-A + S-K <--> I-K + S-A
-//   I-A + I-K <--> I-I + A-K
+//   A-A + S-S <--> S-A + S-A
+//   
 ];
   break;
 
@@ -125,17 +125,17 @@ switch (id) {
 
   case "CHEMSKI+LAMBDA":
     var out = [
-  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},      // Kab = a, a beta     v    tokenIn: I-I        tokenOut:
+  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},      // Kab = a, a beta     v    tokenIn: Arrow        tokenOut:  A-A
 
 // Pruning rewrites  
   {left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"},      // If = f                   v    tokenIn: Arrow      tokenOut: I-A
-  {left:"I",right:"FOE",action:"terminIFOE", named:"I-FOE", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
-  {left:"I",right:"FO",action:"terminIFOE", named:"I-FO", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
-  {left:"K",right:"FOE",action:"terminKFOE", named:"K-FOE", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: A-K        tokenOut: S-A
-  {left:"K",right:"FO",action:"terminKFOE", named:"K-FO", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: A-K        tokenOut: S-A
-  {left:"FOE",right:"K",action:"terminFOEK", named:"FOE-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: I-A        tokenOut: S-K
-  {left:"FO",right:"K",action:"terminFOEK", named:"FO-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: I-A        tokenOut: S-K
-  {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: I-K        tokenOut: I-A
+  {left:"I",right:"FOE",action:"terminIFOE", named:"I-FOE", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: FOE-A
+  {left:"I",right:"FO",action:"terminIFOE", named:"I-FO", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: FO-A
+  {left:"K",right:"FOE",action:"terminKFOE", named:"K-FOE", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: FOE-K        tokenOut: FOE-FOE
+  {left:"K",right:"FO",action:"terminKFOE", named:"K-FO", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: FOE-K        tokenOut: FO-FOE
+  {left:"FOE",right:"K",action:"terminFOEK", named:"FOE-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: Arrow        tokenOut: FOE-K
+  {left:"FO",right:"K",action:"terminFOEK", named:"FO-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: Arrow        tokenOut: FO-K
+  {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: FOE-K        tokenOut: FOE-A
 
 
 // DIST rewrites, with chemlambda available A-S becomes A-FOE which already exists
@@ -147,8 +147,8 @@ switch (id) {
   {left:"S",right:"A",action:"SAFOE", named:"S-A", kind:"DIST"},      // Sabc = (ac)(bc)                     v    tokenIn:            tokenOut:
 
 // token rewrites
-//   I-A + S-K <--> I-K + S-A
-//   I-A + I-K <--> I-I + A-K
+//   A-A + FOE-FOE <--> FOE-A + FOE-A , A-A + FO-FOE <--> FOE-A + FO-A
+//   FOE-FOE + FO-K <--> FOE-K + FO-FOE
 ];
   break;
 
