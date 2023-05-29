@@ -7,7 +7,7 @@ uses toggle between chemSKI and chemSKI+lambda
 
 */
 
-// last updated: 24.08.2020
+// last updated: 29.05.2023
 
 var versusVar = "<br><br> VS. <br><br>";
 var transformList = [];
@@ -79,7 +79,7 @@ reloadCode();
 var molCom = molComments(lambdatext);
 document.getElementById("comments").innerHTML = molCom; 
 }
-setComb(1);setSpeed(1); setStart(1); loop();
+setComb(1);setSpeed(1); setStart(1); setBalanceOfNodes();showBalanceOfNodes(); loop();
 }
 
 
@@ -115,7 +115,7 @@ var ButtonOriginal = [
   {"Id":"button3", "Class":"image2", "Visibility":"hidden", "Onclick": function () {selectionStarter();}, "Text":"new"},
   {"Id":"button0", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(1); setStart(1); chemistryChoice(); loop(); }, "Text":"start"},
   {"Id":"button1", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0);}, "Text":"stop"},
-  {"Id":"button2", "Class":"image2", "Visibility":"visible", "Onclick": function () {setStart(0); loop2();}, "Text":"step"},
+  {"Id":"button2", "Class":"image2", "Visibility":"visible", "Onclick": function () {setStart(0); loop2(); }, "Text":"step"},
   {"Id":"button4", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); reloadCode();}, "Text":"reload"},
   {"Id":"buttonAge", "Class":"image2", "Visibility":"visible", "Onclick": function () {setOlder();}, "Text":"change"},
 //  {"Id":"whichChem", "Class":"image2", "Visibility":"visible", "Onclick": function () {setChemPlus();}, "Text":"chem"},
@@ -138,8 +138,8 @@ var ButtonLambda = [
 
 
 var ButtonSKILambda = [
-  {"Id":"buttonAge", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); lambdaToMol(); reloadCode(); setComb(1);setSpeed(1); setStart(1);  chemistryChoice(); loop();}, "Text":"&lambda;SKI> mol"}, 
-  {"Id":"button1", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(1); setStart(1); chemistryChoice(); loop();}, "Text":"start"},
+  {"Id":"buttonAge", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); lambdaToMol(); reloadCode(); setComb(1);setSpeed(1); setStart(1);  chemistryChoice(); setBalanceOfNodes();showBalanceOfNodes(); loop();}, "Text":"&lambda;SKI> mol"}, 
+  {"Id":"button1", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(1); setStart(1); chemistryChoice(); setBalanceOfNodes();showBalanceOfNodes(); loop();}, "Text":"start"},
   {"Id":"button2", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0);}, "Text":"stop"},
   {"Id":"button3", "Class":"image2", "Visibility":"visible", "Onclick": function () {setStart(0); loop2(); decoratorLambda();}, "Text":"step"},
   {"Id":"whichChem", "Class":"image2", "Visibility":"visible", "Onclick": function () {setSpeed(0); setStart(0); decoratorLambda();}, "Text":"mol> &lambda;SKI"},
@@ -327,7 +327,7 @@ var whatsInThere = document.getElementById('inputlambda').value;
   lambdaToMol(); 
   reloadCode();
   }
-  setComb(1);setSpeed(1); setStart(1); loop();
+  setComb(1);setSpeed(1); setStart(1); setBalanceOfNodes(); showBalanceOfNodes();  loop();
 
 }
 
@@ -339,6 +339,12 @@ function setMetabo() {
   } else {
     metabo = 1;
     document.getElementById("metabotext").innerHTML = "uncolored nodes";
+  }
+}
+
+function setBalanceOfNodes() {
+  for (var ibal=0;  ibal < balanceOfTokens.length; ibal++) {
+    balanceOfTokens[ibal] = 0;
   }
 
 }

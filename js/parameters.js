@@ -2,7 +2,7 @@
 //
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/parameters.js
 //
-// this version 15.08.2020
+// this version 29.05.2023
 
 
 // set up the d3 visualisation
@@ -62,6 +62,10 @@ var age = 0;
 // global counter
 
 var globCount = 0;
+
+// balance of tokens
+
+var balanceOfTokens = [];
 
 // tag and number and token
 
