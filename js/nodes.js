@@ -19,14 +19,14 @@ finite  set of mol node types.
 // added S,K,I for chemSKI  , "S1" is the 1-valent version of "S"
 
 var autoFilter = ["L","A","FI","D","FOE","FOX","FO","T","Arrow","GAMMA","DELTA","S","K","I"];
-
+var Tokens = ["A-A","I-A","S-A","S-K","S-S","Arrow"];
 /*
 nodeValence associates to any mol node type a valence vector, with elements 0 or 1, whose length is the valence of the mol node. 
-
-Mathematically, given the set NT of mol node types, the nodeValence is a function which 
-associates to a mol node type "t" the word w = nodeValence(t). Here the word w is made of 
-letters "0" and "1". The valence of the mol node type is the length of the word w. 
-
+*/
+var balanceOfTokens =  [];
+for (var ibal=0; ibal < Tokens.length; ibal++) {
+  balanceOfTokens.push(0);}
+/*
 In the following definition of nodeValence we see some mol node types with comments. These mol 
 node types can be decorated with permutations of 3 elements, or with elements of the anharmonic 
 group. These decorations are a bridge from the present work to emergent algebras (see for 

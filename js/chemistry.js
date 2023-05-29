@@ -1,6 +1,6 @@
 // chemistries
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/chemistry.js , version 24.08.2020
-// this version: 26.05.2023, 
+// this version: 29.05.2023, 
 
 
 
@@ -249,8 +249,8 @@ return out;
 }
 
 
+ 
 // reactions, i.e. graph rewrites (find and do) transforms algorithms
-
 /*
 The LHS pattern graph notation.
 
@@ -619,7 +619,7 @@ at this stage we have
 
 but it is still possible that there is no e2 port node
 */
-  var n2, a, b, b1, c, d, a1;
+  var n2, a, b, b1, c, d, a1, indTokenType, TokenName = "";
 
 /* the center node n1, if it is 3 valent then it has the ports 
  
@@ -685,17 +685,16 @@ moveLink2(e1,d), defined in myD3Graph.js, works like this:
 
 Then the following removes the node n1, its node ports and all affected links
 */
-      removeNodeAndEdges(n1);
+      removeNodeAndEdges(n1);  indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
 /*
 In mol nodes notation, the LHS pattern is 
-
 t  ...a... 
 Arrow a d
-
 which transforms into the mol node
-
 t ...d...
 */
+ 
+
       break;
 
 /*
@@ -753,7 +752,7 @@ This justifies the "beta-arrow-X" name.
       moveLink1(d,ar1[2]);
       
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);     indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 2;
       break;
 
 /*
@@ -806,7 +805,7 @@ cross.
       moveLink1(d,ar1[2]);
       
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);     indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 2;
       break;
 
 // not used
@@ -893,9 +892,9 @@ cross.
       moveLink1(a,na[1]);
       moveLink1(b,nb[1]);
       moveLink1(c,nc[3]);
-      moveLink1(d,nd[3]);
+      moveLink1(d,nd[3]);  if (trans.t1 == "S" && trans.t3 == "A") {indTokenType  = Tokens.indexOf("S-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;}
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);    
       break;
     case "DIST2":
       var na = addNodeAndEdges(trans.t1,n2.x,n2.y);
@@ -1252,7 +1251,7 @@ cross.
       var e2in = findLinkedHalfEdge(d);
       var n3in = findLinkedCenter(e2in);
       var g32 = findLinkedOfType(n3in,"middle");
-      var g33 = findLinkedOfType(n3in,"out");
+      var g33 = findLinkedOfType(n3in,"out");       
 
 //    add two I nodes   (from token I-I) 
 
@@ -1261,7 +1260,7 @@ cross.
 
       var n3innew = addNodeAndEdges("A",n3in.x,n3in.y);
       var n1new = addNodeAndEdges("A",n1.x,n1.y);
-      var n2new = addNodeAndEdges("K",n1.x,n1.y);
+      var n2new = addNodeAndEdges("K",n1.x,n1.y);        indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
 
 //    create external links
 
@@ -1279,7 +1278,7 @@ cross.
 
       removeNodeAndEdges(n1);
       removeNodeAndEdges(n2);
-      removeNodeAndEdges(n3in);
+      removeNodeAndEdges(n3in);    indTokenType  = Tokens.indexOf("A-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
 
     break;
 
@@ -1288,7 +1287,7 @@ cross.
 
 //    add Arrow   (from token Arrow) 
 
-      var nar = addNodeAndEdges("Arrow",n1.x,n1.y);
+      var nar = addNodeAndEdges("Arrow",n1.x,n1.y);  indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
 
 //    create links
 
@@ -1299,7 +1298,7 @@ cross.
 //      movelink1(n1[2],n1[3]);
 //    otherwise
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);     indTokenType  = Tokens.indexOf("I-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
 
     break; 
 
@@ -1311,13 +1310,13 @@ cross.
 
 
       na = addNodeAndEdges("I",n1.x,n1.y);
-      nb = addNodeAndEdges("I",n2.x,n2.y);
+      nb = addNodeAndEdges("I",n2.x,n2.y);    if (trans.action == "terminIS") { indTokenType  = Tokens.indexOf("I-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;}
       
       moveLink1(c,nb[1],2)
       moveLink1(d,na[1],2)
       
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);                  if (trans.action == "terminIS") { indTokenType  = Tokens.indexOf("S-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;}
 
 
     break; 
@@ -1328,13 +1327,13 @@ cross.
 //    add one K node   (from token A-K) 
 
       na = addNodeAndEdges("K",n1.x,n1.y);
-      nb = addNodeAndEdges("K",n2.x,n2.y);
+      nb = addNodeAndEdges("K",n2.x,n2.y);     if (trans.action == "terminKS") { indTokenType  = Tokens.indexOf("S-K"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;}
       
       moveLink1(c,nb[1],2)
       moveLink1(d,na[1],2)
       
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);     if (trans.action == "terminKS") {indTokenType  = Tokens.indexOf("S-S"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;}
     break; 
 
 
@@ -1349,13 +1348,13 @@ cross.
         moveLink2(a,b);
       } else {
         moveLink2(a,b1);
-      }
+      }                         if (trans.action == "terminSK") {indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;}          
       
 //    when tokens will be ready create S-K
 //
 //    otherwise
       removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);  if (trans.action == "terminSK") {indTokenType  = Tokens.indexOf("S-K"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;}
 
     break; 
 
@@ -1367,12 +1366,12 @@ cross.
       na = addNodeAndEdges("K",n2.x,n2.y);
       
       moveLink1(a,e1.id);
-      moveLink1(b,na[1]);
+      moveLink1(b,na[1]);  indTokenType  = Tokens.indexOf("S-K"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
       
 //    when tokens will be ready connect the I from the I-K token with n2 to obtain a pair I-A, which we use instead of Arrow a e1.id
 //
 //    otherwise 
-      removeNodeAndEdges(n2);
+      removeNodeAndEdges(n2);  indTokenType  = Tokens.indexOf("S-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
 
     break;
 
@@ -1406,7 +1405,7 @@ cross.
       var n3s = findLinkedCenter(e3in);  
 
       var e3sout = findLinkedOfType(n3s,"out");
-      var e3smid = findLinkedOfType(n3s,"middle");
+      var e3smid = findLinkedOfType(n3s,"middle"); 
 
 
 // create copies of the 4 nodes

@@ -9,7 +9,7 @@
 //
 //  forked from https://github.com/mbuliga/quinegraphs/blob/master/js/icequine.js
 //
-// last modified: 05.05.2020
+// last modified: 29.05.2023
 // 
 
 
@@ -213,14 +213,14 @@ function loop(dt) {
 
   decoratorLambdaEdges();
   }
-  if (startVar == 1) requestAnimationFrame(loop);
+  if (startVar == 1) {requestAnimationFrame(loop);  showBalanceOfNodes();}
 }
 
 loop();
 
 function loop2(dt) {
-  setSpeed(1);
-  loop();
+  setSpeed(1); 
+  loop(); showBalanceOfNodes();
 
 }
 
