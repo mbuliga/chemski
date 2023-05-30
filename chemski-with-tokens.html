@@ -137,26 +137,26 @@ which indicates to the reader a way to make the rewrite conservative by the use 
 
 
 <h4 id="RewriteKA">The rewrite K-A</h4>
-<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> corresponds to the SKI combinators rewrite  K a b -> a.  It is a rewrite of kind "BETA".<br><br>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> corresponds to the SKI combinators rewrite  K a b -> a.  It is a rewrite of kind "BETA", similar to the beta rewrite (in graphical form) from lambda calculus.<br><br>
 {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"}<br><br>
  
 It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L99">[chemistry.js line 99]</a>. In mol notation, is described as: <br><br>
 LHS = K 1, A 1 a 2, A 2 b c<br>
 
-RHS = K b, Arrow a c <br><br>
+RHS = K e, Arrow a c, Arrow b e <br><br>
 
 and as a chemical reaction by <br><br>
 
 <img src="img/KA.jpg" alt="K-A rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
 
-with the tokens Arrow and A-A.<br><br>
+with the tokens:  2 Arrow and A-A.<br><br>
 
 The LHS and RHS patterns with the tokens, are: <br><br> 
-LHS with tokens = K 1, A 1 a 2, A 2 b c, Arrow d d<br>
-RHS with tokens = K b, A 1 d 1, A 2 d 2, Arrow a c<br><br>
+LHS with tokens = K 1, A 1 a 2, A 2 b c, Arrow d d, Arrow e e<br>   
+RHS with tokens = K e, A 1 d 1, A 2 d 2, Arrow a c, Arrow b e<br><br>  
 Borrowing from the <a href="https://github.com/mbuliga/hapax">Project Hapax</a>, we see that we can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
-(0 1 2 3 4 5 6 7 8 9 a b c)<br>
-(0 8 2 3 b 1 6 5 c 7 a 4 9)
+(0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
+(0 e 2 1 b 3 6 5 c 7 a 4 9 d 8 f)
 <br><br>
 
 
@@ -461,6 +461,7 @@ Also, the parser works  for lambda terms, like (\x.x x) (\x.x x) or  (\x.\y.x) z
             <option value="SKInote">MENU</option>
             <option value="SKKI">SKKI --> I </option>
             <option value="SIISII"> (SII)(SII) </option>
+            <option value="alexo_SKI"> (S I I) (S (K (S I I)) (S (K (S I)) (S (K K) I))) </option>
             <option value="SKILAMBDAEX"> (&lambda;x.&lambda;y.y x x) K S I </option>
             <option value="IA">chemSKI and chemSKI+&lambda; rewrite I-A</option>
             <option value="SK">only chemSKI rewrite S-K (at port 2 of S)</option>
