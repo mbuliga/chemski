@@ -1246,39 +1246,39 @@ cross.
 
 // chemSKI transforms
 
-    case "KA":
+    case "KA": 
+
+
+// like "beta-arrow-X" where a=c, b=a1, c=g32, d=g33, n1=n3in, n2=n1
 
       var e2in = findLinkedHalfEdge(d);
       var n3in = findLinkedCenter(e2in);
       var g32 = findLinkedOfType(n3in,"middle");
       var g33 = findLinkedOfType(n3in,"out");       
 
-//    add two I nodes   (from token I-I) 
+//    add two Arrow nodes    
+      var ar2 = addNodeAndEdges("Arrow",n1.x,n1.y);
+      var ar1 = addNodeAndEdges("Arrow",n3in.x,n3in.y); 
 
-      var nI1 = addNodeAndEdges("I",n1.x,n1.y);
-      var nI2 = addNodeAndEdges("I",n3in.x,n3in.y);
+      indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 2;
 
-      var n3innew = addNodeAndEdges("A",n3in.x,n3in.y);
-      var n1new = addNodeAndEdges("A",n1.x,n1.y);
-      var n2new = addNodeAndEdges("K",n1.x,n1.y);        indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
+      moveLink1(c,ar1[1]);
+      moveLink1(a1,ar2[2]);
+      moveLink1(g32,ar2[1]);
+      moveLink1(g33,ar1[2]);
+      
+      removeNodeAndEdges(n3in);
+      removeNodeAndEdges(n1);     
 
-//    create external links
+      indTokenType  = Tokens.indexOf("A-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
 
-      moveLink1(c,n3innew[2]);
-      moveLink1(g32,n1new[2]);
-      moveLink1(g33,n3innew[3]);
 
-//    create internal links
 
-      addLink(n1new[3],n2new[1],2);
-      addLink(nI1[1],n1new[1],2);
-      addLink(nI2[1],n3innew[1],2);
 
-//    remove old nodes 
 
-      removeNodeAndEdges(n1);
-      removeNodeAndEdges(n2);
-      removeNodeAndEdges(n3in);    indTokenType  = Tokens.indexOf("A-A"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
+ 
+
+
 
     break;
 

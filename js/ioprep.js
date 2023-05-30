@@ -476,6 +476,8 @@ document.getElementById("molyoulookat").innerHTML = translation;
 function showBalanceOfNodes() {
   var textB = "";
 
+
+
   for (var ibil=0; ibil < Tokens.length; ibil++) {
     textB = textB + Tokens[ibil] + " " + balanceOfTokens[ibil] + "<br>";
   }
