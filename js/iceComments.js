@@ -11,6 +11,10 @@ function molComments(molName) {
 
 switch (molName) {
     
+  case "alexo_SKI":
+  var mol = "This is the SKI translation of the lambda term   (\\a.a a)(\\x.((\\b.b b)(\\y.y x))). It transforms into the chemSKI quine (((S I) I) (((S (K (S I))) ((S (K K)) I)) ((S (K ((S I) I))) ((S (K (S I))) ((S (K K)) I))))). For the explanation see <a href=\"https://chorasimilarity.wordpress.com/2021/04/05/alexo-quine-in-chemski/\">alexo quine in chemSKI</a>.";
+  break;
+
   case "SKILAMBDAEX":
   var mol = "(&lambda;x.&lambda;y.y x x) K S I  is a term in lambda calculus enhanced with special names S, K and I, which are used as in SKI calculus.<br><br>It reduces well to I with chemSKI+&lambda;. It reduces with chemSKI to a graph whose root (FROUT node) edge is decorated with (K I) (K I), because of the FO node which is not part of chemSKI.";
   break;

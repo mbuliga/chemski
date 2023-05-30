@@ -9,6 +9,10 @@ function termLibrary(lambdaName) {
 
 switch (lambdaName) {
 
+  case "alexo_SKI":
+  var lambdaTerm = "(S I I) (S (K (S I I)) (S (K (S I)) (S (K K) I)))";
+  break;
+
   case "SKKI":
   var lambdaTerm = "S K K I";
   break;
