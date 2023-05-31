@@ -4,7 +4,7 @@
 //
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/ioprep.js
 //
-// last updated: 29.05.2023
+// last updated: 31.05.2023, modified showBalanceOfNodes
 
 
 
@@ -474,13 +474,17 @@ document.getElementById("molyoulookat").innerHTML = translation;
 
 
 function showBalanceOfNodes() {
-  var textB = "";
+  var textB = ""; var costcount = 0; var negative = 0;
 
 
 
   for (var ibil=0; ibil < Tokens.length; ibil++) {
-    textB = textB + Tokens[ibil] + " " + balanceOfTokens[ibil] + "<br>";
+    negative = 0 - balanceOfTokens[ibil];
+//    costcount = costcount + (negative * TokensCost[ibil]);
+    costcount = costcount + (balanceOfTokens[ibil] * TokensCost[ibil]);
+    textB = textB + Tokens[ibil] + ":   " + balanceOfTokens[ibil] + "<br>";
   }
+  textB = "Edges won:   " + costcount + "<br><br>" + textB;
   document.getElementById("errors").innerHTML = textB; 
 }
 
