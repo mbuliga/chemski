@@ -1,6 +1,6 @@
 // nodes info
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/nodes.js
-// this version: 13.08.2020, added S,K,I nodes for chemSKI
+// this version: 31.05.2023, added vTokensCost
 
 /*
 In order to define mols (molecules) and mol patterns, we introduce mol node types and 
@@ -20,8 +20,8 @@ finite  set of mol node types.
 
 var autoFilter = ["L","A","FI","D","FOE","FOX","FO","T","Arrow","GAMMA","DELTA","S","K","I"];
 var Tokens = ["A-A","I-A","S-A","S-K","S-S","Arrow"];
+var TokensCost = [3,2,3,2,3,0];                            // cost by number of edges
 /*
-nodeValence associates to any mol node type a valence vector, with elements 0 or 1, whose length is the valence of the mol node. 
 */
 var balanceOfTokens =  [];
 for (var ibal=0; ibal < Tokens.length; ibal++) {
