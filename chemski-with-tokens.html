@@ -3,7 +3,7 @@
 
 <!-- modified from chemSKI & chemlambda. © Marius Buliga (2020), https://mbuliga.github.io/chemski/chemski.html
 author: Marius Buliga
-last modified: 31.05.2023, from the version of 28.05.2023
+last modified: 01.06.2023, from the version of 31.05.2023
 modified order in menu
 //
 -->
@@ -27,7 +27,7 @@ modified order in menu
 
 <div class="header">
   <span3>Cite as: </span3><div>chemSKI with tokens: world building and economy in the SKI universe. <a href="http://imar.ro/~mbuliga/index.html">&copy; Marius Buliga</a> (2023), https://mbuliga.github.io/chemski/chemski-with-tokens.html<span id="citeas"></span></div><br>
-<span3>Version 31.05.2023</span3><br><br>
+<span3>Version 01.06.2023</span3><br><br>
 <span3>See also:</span3><br> <a href="https://chemlambda.github.io/index.html">All chemlambda projects</a>
 <div><br><br>
 
@@ -36,7 +36,10 @@ modified order in menu
 <h3 id="Contents">Contents</h3>
 <h4><a href="#Introduction">Introduction</a></h4>
 <h4><a href="#GraphsAndNodes">Graphs and nodes</a></h4>
+<h4><a href="#ConservativeTokens">Conservative rewrites with tokens</a></h4>
+<h4><a href="#OnCost">Cost of rewrites</a></h4>
 <h4><a href="#ChemskiRewrites">chemSKI rewrites</a></h4>
+<h4><a href="#TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</a></h4>
 <h4><a href="#ChemskiPlusChemlambda">chemSKI + chemlambda v2</a></h4>
 <h4><a href="#ChemskiUsed">How are chemSKI rewrites used</a></h4>
 <h4><a href="#FromSkiToChemski">From SKI to chemSKI</a></h4>
@@ -92,6 +95,69 @@ It is possible to have edges connected to the same node, but at different ports.
 
   The rewrites concerning the node S are different, according to the existence of an edge between S node ports 1 and 2 (in this case S represents the combinator S) or not (in this case S is a fanout node). <br><br>
 
+Any molecule (ie chemSKI graph) is described by a mol file. A mol file is a list of nodes, where each node is a list which starts with the node type and continues with the edge names connected to ports, in the order of the ports. Therefore, as a string, a mol file needs a line separator (between node lines) and a field separator (within each line). As an example, the molecule which is the translation of the combinator ((S K) K) I is described by the mol file<br><br>
+FROUT 1<br>
+S 2 2 3<br>
+A 3 4 5<br>
+K 4<br>
+A 5 6 7<br>
+K 6<br>
+A 7 8 1<br>
+I 8<br><br>
+with space "&nbsp;" as field separator and new line as a line separator. In the simulation section  <a href="#PlayPlace">Play with chemSKI</a> we use "^" as the line separator, for example the same molecule appears as the string<br><br>
+FROUT 6^S 10 10 1^A 1 3 2^K 3^A 2 5 4^K 5^A 4 7 6^I 7<br><br>
+Mind that the edge names are different, which is not important, because they are arbitrary.<br><br>
+The line separator is not important, because we can deduce the number of ports (ie the number of edge names on a node line) from the node type, therefore we shall also use a notation like<br><br>
+FROUT 6 S 10 10 1 A 1 3 2 K 3 A 2 5 4 K 5 A 4 7 6 I 7<br><br>
+for the same molecule, where the line and field separator are the same. Thus a mol file appears as a string of node types and edge names. This convention is useful in the section about rewrites.<br><br>
+
+<h2 id="ConservativeTokens">Conservative rewrites with tokens</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+Each <a href="#ChemskiRewrites">chemSKI rewrite</a> is described by a left hand side (LHS) and a right hand side (RHS) pattern, which are mol files. There is also a chemical interpretation, where we see each rewrite as a chemical reaction, which transforms the LHS into RHS. In order to be conservative in nodes and edges, we need to add tokens, ie a finite number (up to isomorphism) of small graphs.<br><br>
+
+We shall use the following tokens  <a href="https://github.com/mbuliga/chemski/blob/master/js/nodes.js#L22">[nodes.js line 22]</a>:<br><br>
+
+<img src="img/tokens.jpg" alt="chemSKI tokens" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+For each <a href="#ChemskiRewrites">chemSKI rewrite</a> are specified the LHS and RHS appear as mol files (with "," as line separator). Moreover, with the addition of tokens there will be two bigger mol files, called "LHS with tokens" and "RHS with tokens". Written as strings (ie with line and field separator equal), "RHS with tokens" will be a permutation of "LHS with tokens".<br><br>
+
+<strong>Borrowing from the <a href="https://github.com/mbuliga/hapax">Project Hapax</a>, we see that the addition of tokens solves the problem of unique name edges, even in a decentralized graphical reduction. It is enough to have "minted" tokens (ie tokens with unique edge names) and then to use them in the rewrites. The minting is of course an independent part from the reduction rewrites.</strong><br><br>
+
+The tokens have 1 (for Arrow token), 2 (for S-K and I-A tokens) or 3 (for A-A, S-A, S-S tokens) edge names. Minting such a token is a process where the new, unique name edges of the token are produced. In a sense, each such token carries 1, 2 or 3 unique names.<br><br>
+
+<h2 id="OnCost">Cost of rewrites</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+
+Each <a href="#ChemskiRewrites">chemSKI rewrite</a> has the form<br><br>
+
+LHS + In Tokens = RHS + Out Tokens<br><br>
+
+Suppose that each token has a scalar cost, per token type, in our case there are numbers  cost[A-A], cost[I-A], cost[S-A], cost [S-K], cost[S-S], cost[Arrow].  In the programs the cost per token is in the TokensCost vector <a href="https://github.com/mbuliga/chemski/blob/master/js/nodes.js#L23">[nodes.js line 23]</a>. Then the cost of a collection of tokens is the sum of costs of tokens. <br><br>
+
+A reasonable choice is to take the cost of the token as the number of  unique names it carries, but this choice is not unique. In an economy application the cost per token would be decided by trading. In a world building application the cost per token would be tuned bo reflect its scarcity.<br><br>
+
+As the Arrow token enters in many "COMB" rewrites, which just eliminate the Arrow nodes, it is also reasonable to assign a cost equal to 0 for this token, because Arrow nodes in graphs have a fleeting existence.<br><br>
+
+The cost of a rewrite depends on the application. There is an in cost of a rewrite:<br><br>
+InCost[rewrite] = cost[In Tokens]  <br><br>
+and an out cost of a rewrite:<br><br>
+OutCost[rewrite] = cost[Out Tokens]<br><br>
+From here, we may have a cost of a rewrite, as <br><br>
+cost[rewrite] =  OutCost[rewrite] - InCost[rewrite]<br><br>
+The cost of a graph reduction would be then the sum of the costs of rewrites performed.<br><br>
+For example, in the case when the cost measures the number of new names, this is reasonable. Also, this cost[rewrite] would be interesting in relation to world building applications, where we see graphs as artificial life, <a href="https://arxiv.org/abs/2005.06060">arXiv:2005.06060</a> section 3, or the experiment page <a href="https://mbuliga.github.io/quinegraphs/quinecheck.html">How to test a quine</a>. For such an application cost[rewrite] is related to the metabolism.<br><br>
+For economy applications we may use InCost[rewrite] to bill a rewrite. We would use perhaps only "In Tokens" from the customer.  Then OutCost[rewrite] would measure the value of the tokens we obtain because we performed the rewrite. cost[rewrite] would be then the profit.<br><br>
+Also for economy or general computation applications, such cost would supplement other costs considered, like the number of computational steps performed by a virtual machine to do the rewrite. Indeed, for some quine graphs, like in <a href="#PlayPlace">Play with chemSKI</a> menu the graph associated to (S I I) (S I I), the cost of the graph reduction oscilates in time around 0. The computational cost of running the reductions for such a quine should be something which increases approximately linear in time. For other graphs,  like in <a href="#PlayPlace">Play with chemSKI</a> menu the graph associated to (S I I) (S (K (S I I)) (S (K (S I)) (S (K K) I))), they may evolve into a "dirty" quine graph, which is an ever increasing graph which has a component which is a quine, but also more and more "dirt"  or "waste" composed of small graphs which are inert. In such a case the cost proposed here is linear in time.<br><br>  
+ 
+The existence of "waste" implies that, whatever cost we consider, it should also extend to the cost[Initial graph] and cost[Final Graph], such that it satisfies:<br><br>
+cost[Initial Graph] + InCost[all rewrites performed] = cost[Final Graph] + OutCost[all rewrites performed]<br><br>
+OutCost[all rewrites performed] = Profit[all rewrites performed] + cost[waste]<br><br>
+
+We leave open this subject. <br><br>
+
+
 <h2 id="ChemskiRewrites">chemSKI rewrites</h2>
 <h4>(<a href="#Contents">back to contents</a>)</h4><br>
 
@@ -107,9 +173,9 @@ The list of rewrites of chemSKI is the following, in mol notation and graphicall
       <li><a href="#RewriteAS">A-S duplicates A and S as a fanout</a></li>
       <li><a href="#RewriteSS">S-S duplicates S as a combinator</a></li>
       <li><a href="#RewriteSA">S-A corresponds to the SKI combinators rewrite S a b c -> (a c) (b c)</a></li>
+      <li><a href="#RewriteCOMB">COMB rewrite eliminates Arrow nodes</a></li>
 </ul>     
 
-Each rewrite is described by a left hand side (LHS) and a right hand side (RHS) pattern. There is also a chemical interpretation, where we see each rewrite as a chemical reaction, which transforms the LHS into RHS. In order to be conservative in nodes and edges, we need to add tokens, ie a finite number (up to isomorphism) of small graphs.<br><br>
 
 The rewrites are defined  in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L97">[chemistry.js from line 99]</a><br><br>
 
@@ -141,7 +207,7 @@ which indicates to the reader a way to make the rewrite conservative by the use 
 <h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> corresponds to the SKI combinators rewrite  K a b -> a.  It is a rewrite of kind "BETA", similar to the beta rewrite (in graphical form) from lambda calculus.<br><br>
 {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"}<br><br>
  
-It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L99">[chemistry.js line 99]</a>. In mol notation, is described as: <br><br>
+It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L99">[chemistry.js line 99]</a>. In mol notation,  is described as: <br><br>
 LHS = K 1, A 1 a 2, A 2 b c<br>
 
 RHS = K e, Arrow a c, Arrow b e <br><br>
@@ -155,7 +221,7 @@ with the tokens:  2 Arrow and A-A.<br><br>
 The LHS and RHS patterns with the tokens, are: <br><br> 
 LHS with tokens = K 1, A 1 a 2, A 2 b c, Arrow d d, Arrow e e<br>   
 RHS with tokens = K e, A 1 d 1, A 2 d 2, Arrow a c, Arrow b e<br><br>  
-Borrowing from the <a href="https://github.com/mbuliga/hapax">Project Hapax</a>, we see that we can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
+We can encode the passage from (LHS with tokens) to (RHS with tokens) as the permutation<br><br> 
 (0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
 (0 e 2 1 b 3 6 5 c 7 a 4 9 d 8 f)
 <br><br>
@@ -383,6 +449,123 @@ We can encode the passage from (LHS with tokens) to (RHS with tokens) as the per
 (0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
 (0 e 1 3 4 6 2 7 8 a 5 b c 9 d f)
 <br><br>
+
+
+<h4 id="RewriteCOMB">The rewrite COMB</h4>
+<h4>(<a href="#ChemskiRewrites">back to chemSKI rewrites</a>)</h4> is a generic rewrite which appears in all chemlambda formalisms. It has the role to eliminate Arrow nodes. It appears as  <br><br>
+{left:"any",right:"Arrow",action:"arrow", named:"COMB", kind:"COMPOSE"}<br><br>
+
+
+ It is described in <a href="https://github.com/mbuliga/chemski/blob/master/js/chemistry.js#L15">[chemistry.js line 15]</a>. In not quite a mol notation, is described as: <br><br>
+LHS = [The other node connected to the edge named "a"], Arrow a b<br>
+
+RHS = [That node where "a" is replaced by "b"] <br><br>
+
+It is thus a schema of rewrites. As a a chemical reaction by <br><br>
+
+<img src="img/COMB.jpg" alt="COMB rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+with no token as input and a token Arrow as output.<br><br>
+
+
+
+
+
+
+<h2 id="TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</h2>
+<h4>(<a href="#Contents">back to contents</a>)</h4><br>
+
+Tokens rewrites are rewrites involving only tokens. They are needed in case we have tokens which do not appear as in tokens.<br><br> 
+
+Synthesis rewrites are needed to produce new graphs from old ones, outside of the chemSKI reduction. For example we may want to copy an existing graph, to erase one, or to produce a new graph from existing ones.<br><br>
+Waste rewrites convert waste to tokens or useful graphs.<br><br>
+In this version of the programs these rewrites are not implemented.<br><br>
+
+<ul>
+      <li><a href="#TokensRewrites">Tokens rewrites</a></li>
+      <li><a href="#SynthesisS-K">Synthesis S-K rewrite</a></li>
+      <li><a href="#SynthesisS-A">Synthesis S-A rewrite</a></li>
+      <li><a href="#WasteRewrites">Waste rewrites</a></li>
+</ul>     
+
+
+<h4 id="TokensRewrites">Tokens rewrites</h4>
+<h4>(back to <a href="#TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</a>)</h4>  In this proposal we have only one such rewrite:<br><br>
+S-S + A-A = 2 S-A<br><br>
+The justification is that the tokens A-A and S-S never appear as In Tokens in the <a href="#ChemskiRewrites">chemSKI rewrites</a>, so there should be a way to convert these tokens into ones which can be used further.<br><br>
+ In mol notation, the rewrite is described as: <br><br>
+LHS = S a b a, S c b c, A d e d, A f e f<br>
+
+RHS = S a b a, S c e c, A d b d, A f e f <br><br>
+
+and as a chemical reaction by <br><br>
+
+<img src="img/SSAA.jpg" alt="token rewrite SSAA" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+We can encode the passage from LHS to RHS as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b c d e f)<br>
+(0 1 2 3 4 5 a 7 8 9 6 b c d e f)
+<br><br>
+
+<h4 id="SynthesisS-K">Synthesis S-K rewrite</h4>
+<h4>(back to <a href="#TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</a>)</h4> is a rewrite which rewires two FROUT nodes, with the help of a S-K token. 
+In mol notation, the rewrite is described as: <br><br>
+LHS with tokens = FROUT a, FROUT b, S c e c, K e<br>
+ 
+RHS with tokens = FROUT e, FROUT c, S a e c, K b <br><br> 
+
+and as a chemical reaction by <br><br>
+
+<img src="img/synthSK.jpg" alt="Synthesis S-K rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+We can encode the passage from LHS with tokens  to RHS with tokens as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9)<br>
+(0 6 2 5 4 1 9 7 8 3)
+<br><br>
+
+This rewrite is used to duplicate a graph and erase another. Indeed, suppose FROUT a and FROUT b are the free out nodes corresponding to the roots of two combinators, denoted Ta and Tb (converted to chemSKI). After the rewrite is done, the combinator Ta will be duplicated and the combinator Tb will be erased, by using only the chemSKI rewrites.<br><br>
+
+These duplication and erasure rewrites will have costs which, in particular, can be used to define the cost of a graph (here cost[Ta]) or to define the cost of erasure of a graph (here the cost of reductions of the Tb graph connected to K). This can be used in section <a href="#OnCost">Cost of rewrites</a>. <br><br>
+
+In artificial life applications, such a rewrite, applied randomly, will trigger a duplication of a molecule and the erasure of another. <br><br>
+
+<h4 id="SynthesisS-A">Synthesis S-A rewrite</h4>
+<h4>(back to <a href="#TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</a>)</h4> is a rewrite which rewires two FROUT nodes, with the help of a S-K token. In mol notation, the rewrite is described as: <br><br>
+LHS with tokens = FROUT a, FROUT b, S c e c, A d e d<br>
+ 
+RHS with tokens = FROUT e, FROUT c, S a e d, A d b c<br><br>          
+
+
+and as a chemical reaction by <br><br>
+
+<img src="img/synthSA.jpg" alt="Synthesis SA rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
+
+
+We can encode the passage from LHS to RHS as the permutation<br><br> 
+(0 1 2 3 4 5 6 7 8 9 a b)<br>
+(0 6 2 5 4 1 a 9 8 b 3 7)
+<br><br>
+
+This rewrite is used to duplicate a graph and connect one of the copies to another, via an A node. Indeed, as before suppose FROUT a and FROUT b are the free out nodes corresponding to the roots of two combinators, denoted Ta and Tb (converted to chemSKI). After the rewrite is done, the combinator Ta will be duplicated (by the node S) into Ta1 and Ta2 and  Ta2 will be applied to the combinator Tb, by using only the chemSKI rewrites.<br><br>
+
+This rewrite may play the role of a rewrite from <a href="https://www.mitpressjournals.org/doi/pdf/10.1162/isal_a_00258">Combinatory Chemistry: Towards a Simple Model of Emergent Evolution</a>, <a href="https://arxiv.org/abs/2003.07916">arXiv:2003.07916</a>:<br><br> 
+Ta + Tb = Ta Tb<br><br>
+which does not have a correspondent in chemSKI rewrites.<br><br>
+
+
+<h4 id="WasteRewrites">Waste rewrites</h4>
+<h4>(back to <a href="#TokensSynthesisRewrites">Tokens, synthesis and waste rewrites</a>)</h4> are rewrites involving tokens and inert 2 nodes graphs, like a pair of K-K  or I-K or I-I  or A-K graphs.<br><br>  
+
+We leave such rewrites unspecified exactly, but it is clear how to propose them. Some could be in a form similar to token rewrites, like<br><br>
+K-K + S-S = 2 S-K<br><br>
+I-I + A-A = 2 I-A<br><br>
+I-K + A-A = A-K + I-A<br><br>
+A-K + S-S = S-A + S-K<br><br>
+With each such rewrite comes a cost, building towards a cost[waste], see section <a href="#OnCost">Cost of rewrites</a>. <br><br>
+
+
 
 <h2 id="ChemskiPlusChemlambda">chemSKI +  chemlambda v2</h2>
 <h4>(<a href="#Contents">back to contents</a>)</h4><br>
