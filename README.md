@@ -3,7 +3,7 @@
 
 A purely local graph rewrite system for the SKI combinator calculus, in [chemlambda](https://chemlambda.github.io/index.html) style.
 
-The main article is [chemSKI with tokens: world building and economy in the SKI universe](https://mbuliga.github.io/chemski/chemski-with-tokens.html). 
+The main article is [chemSKI with tokens: world building and economy in the SKI universe](https://mbuliga.github.io/chemski/chemski-with-tokens.html),  [arXiv:2306.00938](https://arxiv.org/abs/2306.00938). 
 
 chemSKI was first proposed in  [chemSKI & chemlambda](https://mbuliga.github.io/chemski/chemski.html#SIISII). 
 
