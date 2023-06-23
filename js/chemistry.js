@@ -104,7 +104,8 @@ switch (id) {
   {left:"K",right:"S",action:"terminKS", named:"K-S", kind:"TERMINATION"}, // like terminfrin             v    tokenIn: S-K        tokenOut: S-S
   {left:"S",right:"K",action:"terminSK", named:"S-K", kind:"TERMINATION"}, // like term1                  v    tokenIn: Arrow      tokenOut: S-K
   {left:"A",right:"K",action:"termAK", named:"A-K", kind:"TERMINATION"}, // like term                     v    tokenIn: S-K        tokenOut: S-A
-
+  {left:"K",right:"K",action:"termKK", named:"K-K", kind:"TERMINATION"}, // like term                     v    tokenIn: S-S        tokenOut: 2 S-K                     // added
+  {left:"I",right:"K",action:"termIK", named:"I-K", kind:"TERMINATION"}, // like term                     v    tokenIn: A-A + S-S  tokenOut: I-A + S-A + S-K           // added
 
 // DIST rewrites
   {left:"A",right:"S",action:"DIST1", named:"A-S", t1:"S",t2:"S",t3:"A",t4:"A", kind:"DIST"}, //          v    tokenIn: S-A        tokenOut:
@@ -431,9 +432,9 @@ cases for chemSKI
 
         break;
 
-        case "termIA": 
-/*
-only matters if n1type, n2type match and if the node port e2 is of type "out"
+        case "termIA": case "termKK": case "termIK":                                                                             // added 
+/* 
+only matters if n1type, n2type match and if the node port e2 is of type "in"                                                     // mod "out" to "in"
                                
                    e2    e1     
            
@@ -1335,6 +1336,35 @@ cross.
       removeNodeAndEdges(n1);
       removeNodeAndEdges(n2);     if (trans.action == "terminKS") {indTokenType  = Tokens.indexOf("S-S"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;}
     break; 
+
+
+    case "termKK": case "termIK":
+
+//    add one K node   (from token A-K) 
+
+      if (trans.action == "termKK") { indTokenType  = Tokens.indexOf("S-S"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
+                                      indTokenType  = Tokens.indexOf("S-K"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 2;
+                                    }
+      
+      if (trans.action == "termIK") { indTokenType  = Tokens.indexOf("S-S"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
+                                      indTokenType  = Tokens.indexOf("A-A"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;
+
+                                      indTokenType  = Tokens.indexOf("I-A"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
+                                      indTokenType  = Tokens.indexOf("S-A"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
+                                      indTokenType  = Tokens.indexOf("S-K"); 
+                                      balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] + 1;
+                                    }
+      
+      removeNodeAndEdges(n1);
+      removeNodeAndEdges(n2);  
+    break; 
+
 
 
     case "terminSK": case "terminFOEK":
