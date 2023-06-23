@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en-US">
 
-<!-- modified from chemSKI & chemlambda. © Marius Buliga (2020), https://mbuliga.github.io/chemski/chemski.html
+<!-- modified from chemSKI with tokens: world building and economy in the SKI universe. © Marius Buliga (2023), https://mbuliga.github.io/chemski/chemski-with-tokens.html
 author: Marius Buliga
-last modified: 01.06.2023, from the version of 31.05.2023
-modified order in menu
+last modified: 23.06.2023, from the version of 01.06.2023
+added rewrites termKK and termIK
 //
 -->
 
@@ -27,7 +27,7 @@ modified order in menu
 
 <div class="header">
   <span3>Cite as: </span3><div>chemSKI with tokens: world building and economy in the SKI universe. <a href="http://imar.ro/~mbuliga/index.html">&copy; Marius Buliga</a> (2023), https://mbuliga.github.io/chemski/chemski-with-tokens.html<span id="citeas"></span></div><br>
-<span3>Version 01.06.2023, associated with <a href="https://arxiv.org/abs/2306.00938">arXiv:2306.00938</a></span3><br><br>
+<span3>Version 23.06.2023, updated from version 01.06.2023 which is associated with <a href="https://arxiv.org/abs/2306.00938">arXiv:2306.00938</a></span3><br><br>
 <span3>See also:</span3><br> <a href="https://chemlambda.github.io/index.html">All chemlambda projects</a>
 <div><br><br>
 
@@ -461,7 +461,7 @@ LHS = [The other node connected to the edge named "a"], Arrow a b<br>
 
 RHS = [That node where "a" is replaced by "b"] <br><br>
 
-It is thus a schema of rewrites. The chemical reaction description is the following:  <br><br>
+It is thus a schema of rewrites. As a a chemical reaction by <br><br>
 
 <img src="img/COMB.jpg" alt="COMB rewrite" style="padding: 10px; margin-bottom: 9px; width:100%;border:0"><br><br>
 
@@ -565,7 +565,10 @@ I-K + A-A = A-K + I-A<br><br>
 A-K + S-S = S-A + S-K<br><br>
 With each such rewrite comes a cost, building towards a cost[waste], see section <a href="#OnCost">Cost of rewrites</a>. <br><br>
 
-
+UPDATE (23.06.2023): The following waste rewrites were added, compatible with those mentioned: <br><br>
+(termKK): &nbsp; &nbsp; K-K + S-S = 2 S-K<br><br>
+(termIK): &nbsp; &nbsp; I-K + A-A + S-S = (A-K + S-S + I-A = ) &nbsp; S-A + S-K + I-A<br><br>
+The rewrite "terminIK" is a one step version of two of the mentioned rewrites. <br><br><br><br>
 
 <h2 id="ChemskiPlusChemlambda">chemSKI +  chemlambda v2</h2>
 <h4>(<a href="#Contents">back to contents</a>)</h4><br>
