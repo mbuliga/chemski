@@ -1,6 +1,6 @@
 // chemistries
 // forked from https://github.com/mbuliga/quinegraphs/blob/master/js/chemistry.js , version 24.08.2020
-// this version: 29.05.2023, 
+// this version: 04.07.2023, 
 
 
 
@@ -96,8 +96,8 @@ switch (id) {
 //
   case "CHEMSKI":
     var out = [
-  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},                 // Kab = a, a beta          v    tokenIn: Arrow      tokenOut: A-A
-
+  {left:"K",right:"A",action:"KA", named:"K-A", kind:"BETA"},                 // Kab = a,                 v    tokenIn: 2 Arrow      tokenOut: A-A
+//  {left:"A",right:"A",action:"AA", named:"A-A", kind:"BETA"},                 // SKa = I,                 v    tokenIn: I-A          tokenOut: A-A + S-A              // suggested by JT
 // Pruning rewrites  
   {left:"I",right:"A",action:"termIA", named:"I-A", kind:"TERMINATION"},      // Ia = a                   v    tokenIn: Arrow      tokenOut: I-A
   {left:"I",right:"S",action:"terminIS", named:"I-S", kind:"TERMINATION"}, // like termin2 and terminfrin v    tokenIn: I-A        tokenOut: S-A
@@ -114,8 +114,8 @@ switch (id) {
   {left:"S",right:"S",action:"SS", named:"S-S", kind:"DIST"},  //                                         v    tokenIn:            tokenOut:
   {left:"S",right:"A",action:"SA", named:"S-A", kind:"DIST"},      // Sabc = (ac)(bc)                     v    tokenIn:            tokenOut:
 
-// token rewrites
-//   A-A + S-S <--> S-A + S-A
+// token rewrites, waste rewrites, 
+//   A-A + S-S <--> S-A + S-A , (termKK):     K-K + S-S = 2 S-K , (termIK):     I-K + A-A + S-S = (A-K + S-S + I-A = )   S-A + S-K + I-A
 //   
 ];
   break;
@@ -1372,12 +1372,12 @@ cross.
 // identical to "term1", with the exception of the I-A token instead of Arrow or direct reconnection
 
 //    with tokens add I-A
-//
+      var ar1 = addNodeAndEdges("Arrow",n1.x,n1.y);
 //    otherwise
-      if (e2.type == "out") {
-        moveLink2(a,b);
+      if (e2.type == "out") {  // originally this rewrite connects half-edges directly, with movelink2, without the intermediary of Arrow and movelink1
+                               moveLink1(a,ar1[1]);  moveLink1(b,ar1[2]);    //        moveLink2(a,b);         //
       } else {
-        moveLink2(a,b1);
+                               moveLink1(a,ar1[1]);  moveLink1(b1,ar1[2]);    //        moveLink2(a,b1);        //
       }                         if (trans.action == "terminSK") {indTokenType  = Tokens.indexOf("Arrow"); balanceOfTokens[indTokenType] = balanceOfTokens[indTokenType] - 1;}          
       
 //    when tokens will be ready create S-K
